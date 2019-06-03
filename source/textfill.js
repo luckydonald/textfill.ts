@@ -19,7 +19,7 @@ Options:
 
 minFontPixels:      Minimal font size (in pixels). The text will shrink up to this value.
 maxFontPixels:      Maximum font size (in pixels). The text will stretch up to this value.. If it's a negative value (size <= 0), the text will stretch to as big as the container can accommodate.
-innerTag:           The child element tag to resize. We select it by using $(innerTag + ':visible:first', container)
+innerTag:           The child element tag to resize. We select it by using container.querySelector(innerTag)
 widthOnly:          Will only resize to the width restraint. The font might become tiny under small containers.
 explicitWidth:      Explicit width to resize. Defaults to the container's width.
 explicitHeight:     Explicit height to resize. Defaults to the container's height.
@@ -100,7 +100,7 @@ TextFill = function(selector, options){
 	// Outputs all information on the current sizing
 	// of the font.
 	// For arguments, see _sizing(), below
-	function _debug_sizing(prefix, ourText, maxHeight, maxWidth, minFontPixels, maxFontPixels) {
+	function _debug_sizing(prefix, ourText, maxHeight, maxWidth, minFontPixels, maxFontPixels, fontSize) {
 
 		function _m(v1, v2) {
 
@@ -117,7 +117,7 @@ TextFill = function(selector, options){
 
 		_debug(
 			'[TextFill] '  + prefix + ' { ' +
-			'font-size: ' + ourText.css('font-size') + ',' +
+			'font-size: ' + fontSize + ',' +
 			'Height: '    + ourText.offsetHeight + 'px ' + _m(ourText.offsetHeight, maxHeight) + maxHeight + 'px,' +
 			'Width: '     + ourText.offsetWidth  + _m(ourText.offsetWidth , maxWidth)  + maxWidth + ',' +
 			'minFontPixels: ' + minFontPixels + 'px, ' +
@@ -149,7 +149,8 @@ TextFill = function(selector, options){
 		_debug_sizing(
 			prefix, ourText,
 			maxHeight, maxWidth,
-			minFontPixels, maxFontPixels
+			minFontPixels, maxFontPixels,
+			'font size not yet calculated'
 		);
 
 		// The kernel of the whole plugin, take most attention
@@ -192,7 +193,7 @@ TextFill = function(selector, options){
 			_debug_sizing(
 				prefix, ourText,
 				maxHeight, maxWidth,
-				minFontPixels, maxFontPixels
+				minFontPixels, maxFontPixels, fontSize
 			);
 		}
 
@@ -204,7 +205,8 @@ TextFill = function(selector, options){
 			_debug_sizing(
 				prefix + '* ', ourText,
 				maxHeight, maxWidth,
-				minFontPixels, maxFontPixels
+				minFontPixels, maxFontPixels,
+				maxFontPixels
 			);
 		}
 		return minFontPixels;
@@ -228,32 +230,25 @@ TextFill = function(selector, options){
 	for (var i = 0; i < elements.length; i++) {
 		var parent = elements[i];
 
-		// Contains the child element we will resize.
-		// $(this) means the parent container
-		var ourText = parent.querySelectorAll(options.innerTag  + ":first");
+		// ourText contains the child element we will resize.
+		var ourText = parent.querySelector(options.innerTag);
+		var ourTextComputedStyle = window.getComputedStyle(ourText);
 
-		_debug('[TextFill] Inner text: ' + ourText.text());
-		_debug('[TextFill] All options: ', Opts);
+		_debug('[TextFill] Element: ' + parent)
+		_debug('[TextFill] Inner text: ' + ourText.textContent);
+		_debug('[TextFill] All options: ', options);
 		_debug('[TextFill] Maximum sizes: { ' +
 			'Height: ' + maxHeight + 'px, ' +
 			'Width: '  + maxWidth  + 'px' + ' }'
 		);
 
-		// Want to check if our text has the :visible pseudoselector
-		// Most modern browsers support ".matches". However, IE9+ calls it msMatchesSelector
-		// See: https://www.bennadel.com/blog/3476-checking-to-see-if-an-element-has-a-css-pseudo-class-in-javascript.htm
-        var nativeMatches = ( ourText.matches || ourText.msMatchesSelector );
-        try {
-        	// Check it's visible. Will enter catch block if not
-            nativeMatches.call(ourText, ":visible");
-        } catch (error) {
-            // In the case of an error, assume it's because not visible
-            // this is the case unless really old browser
+		// Want to make sure our text is visible
+		if (ourTextComputedStyle === 'none') {
             if (options.fail)
 				options.fail(parent);
 
 			_debug(
-				'[TextFill] Failure: inner element not visible.'
+				'[TextFill] Failure: Inner element not visible.'
 			);
 
 			continue;
@@ -264,8 +259,8 @@ TextFill = function(selector, options){
 		var maxHeight = options.explicitHeight || parent.offsetHeight;
 		var maxWidth  = options.explicitWidth  || parent.offsetWidth;
 
-		var oldFontSize   = window.getComputedStyle(ourText, null).getPropertyValue("font-size");
-		var oldLineHeight = window.getComputedStyle(ourText, null).getPropertyValue("line-height");
+		var oldFontSize   = ourTextComputedStyle.getPropertyValue("font-size");
+		var oldLineHeight = ourTextComputedStyle.getPropertyValue("line-height");
 
 		var lineHeight  = parseFloat(oldLineHeight) / parseFloat(oldFontSize);
 
@@ -364,77 +359,4 @@ TextFill = function(selector, options){
 	_debug('[TextFill] End Debug');
 
 }
-
-
-
-; (function($) {
-
-	/**
-	 * Resizes an inner element's font so that the
-	 * inner element completely fills the outer element.
-	 *
-	 * @param {Object} options User options that take
-	 *                         higher precedence when
-	 *                         merging with the default ones.
-	 *
-	 * @return All outer elements processed
-	 */
-	$.fn.textfill = function(options) {
-
-		// _______ _______ _______  ______ _______
-		// |______    |    |_____| |_____/    |
-		// ______|    |    |     | |    \_    |
-        //
-		// Let's get it started (yeah)!
-
-
-		this.each(function() {
-
-			_debug(
-				'[TextFill] Finished { ' +
-				'Old font-size: ' + oldFontSize              + ', ' +
-				'New font-size: ' + ourText.css('font-size') + ' }'
-			);
-
-			// Oops, something wrong happened!
-			// If font-size increasing, we weren't supposed to exceed the original size 
-			// If font-size decreasing, we hit minFontPixels, and still won't fit 
-			if ((ourText.width()  > maxWidth && !Opts.allowOverflow) ||
-				(ourText.height() > maxHeight && !Opts.widthOnly && !Opts.allowOverflow)) { 
-
-				ourText.css('font-size', oldFontSize);
-
-				// Failure callback
-				if (Opts.fail) {
-					Opts.fail(this);
-				}
-
-				_debug(
-					'[TextFill] Failure { ' +
-					'Current Width: '  + ourText.width()  + ', ' +
-					'Maximum Width: '  + maxWidth         + ', ' +
-					'Current Height: ' + ourText.height() + ', ' +
-					'Maximum Height: ' + maxHeight        + ' }'
-				);
-			}
-			else if (Opts.success) {
-				Opts.success(this);
-			}
-		});
-
-		// Complete callback
-		if (Opts.complete) {
-			Opts.complete(this);
-		}
-
-		_debug('[TextFill] End Debug');
-		return this;
-	};
-
-})(function() {
-	if (typeof module !== 'undefined' && module.exports) {
-		return require('jquery');
-	}
-	return window.jQuery;
-}());
 
