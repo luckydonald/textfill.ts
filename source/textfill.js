@@ -222,6 +222,9 @@ TextFill = function(selector, options){
 	var elements;
 	if (typeof selector === 'string') {
 		elements = document.querySelectorAll(selector);
+	} else if (selector instanceof Element || selector instanceof HTMLDocument) {
+		// Support for DOM nodes
+		elements = selector;
 	} else if (selector.length) {
 		// Support for array based queries (such as jQuery)
 		elements = selector;
@@ -234,7 +237,6 @@ TextFill = function(selector, options){
 		var ourText = parent.querySelector(options.innerTag);
 		var ourTextComputedStyle = window.getComputedStyle(ourText);
 
-		_debug('[TextFill] Element: ' + parent)
 		_debug('[TextFill] Inner text: ' + ourText.textContent);
 		_debug('[TextFill] All options: ', options);
 		_debug('[TextFill] Maximum sizes: { ' +
@@ -323,18 +325,19 @@ TextFill = function(selector, options){
 		if ((ourText.offsetWidth  > maxWidth && !options.allowOverflow) ||
 			(ourText.offsetHeight > maxHeight && !options.widthOnly && !options.allowOverflow)) { 
 
-			ourText.style.fontSize = fontSizeFinal + "px";
+			ourText.style.fontSize = oldFontSize;
 
 			// Failure callback
 			if (options.fail) {
-				options.fail(this);
+				options.fail(parent);
 			}
 
 			_debug(
 				'[TextFill] Failure { ' +
-				'Current Width: '  + ourText.width()  + ', ' +
+				'Reason: Either exceeded original size or attempted to go below minFontPixels... ' +
+				'Current Width: '  + ourText.offsetWidth  + ', ' +
 				'Maximum Width: '  + maxWidth         + ', ' +
-				'Current Height: ' + ourText.height() + ', ' +
+				'Current Height: ' + ourText.offsetHeight + ', ' +
 				'Maximum Height: ' + maxHeight        + ' }'
 			);
 
@@ -353,7 +356,7 @@ TextFill = function(selector, options){
 
 	// Complete callback
 	if (options.complete) {
-		options.complete(parent);
+		options.complete();
 	}
 
 	_debug('[TextFill] End Debug');
