@@ -4,16 +4,16 @@ So you want to help us. Neat, you are awesome!
 
 You can:
 
-- **Spread the word about this plugin**. Seriously, by just mentioning us to a
-  friend you're already making a good difference.
+- **Spread the word about this library** or the [plugin it is based on](https://github.com/jquery-textfill/jquery-textfill).
+Seriously, by just mentioning us to a friend you're already making a good difference.
 - [**Report an issue here**][issue]. It could be anything; a bug, suggestion,
   enhancement and even a site where you used this plugin.
-- **Make a pull request**. This is the preferred method, because we don't need
-  to touch on the code :bowtie:
+- **Make a pull request**. This is the preferred method, because then the maintainers don't need
+  to touch the code :bowtie:
 
 See details on each of one below.
 
-[issue]: https://github.com/jquery-textfill/jquery-textfill/issues
+[issue]: https://github.com/Jetroid/textfill.js/issues
 
 ## Reporting an issue
 
@@ -61,9 +61,10 @@ These tasks are for releasing, contributors should not take on them.
 Also, before you submit, make sure:
 
 * The Coding style generally matches
-* It passes all (or most) [tests][]
+* Have a clear description of what problem you are trying to solve with your code. If a related issue exists, just reference that instead.
+* It passes all (or most) tests (open `unit-tests/tests.html` in your browser). 
+* *Optional* If you're adding a new feature, we'd prefer if you could add new unit tests! 
 * *Optional* Update [`README`](README.md) if necessary
-* *Optional* Update [`CHANGES`](CHANGES.md) if worth mentioning in the Development section at the top
+* *Optional* Update [`CHANGES`](CHANGES.md) if worth mentioning (Add to the Development section, don't create a new release)
 
-[tests]: http://jquery-textfill.github.io/jquery-textfill/tests.html
 

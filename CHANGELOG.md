@@ -13,11 +13,14 @@ Update size when page resizes for responsiveness.
 
 ## Development
 
-## Version 0.6.2 (2018-02-24)
+## Version 1.0.0
+* Remove JQuery Dependency
+
+## Version jquery-0.6.2 (2018-02-24)
 * Performance improvement
 * Added option to truncate without failing
 
-## Version 0.6.1 (2018-02-23)
+## Version jquery-0.6.1 (2018-02-23)
 
 * Using the widthOnly option will apply a white-space:nowrap style so that the measured text won't wrap and therefore not have a proper width calculation. (by Klemens Ullman-Marx)
 * Potential infinite loop prevented (by joel Anna)
@@ -27,16 +30,16 @@ Update size when page resizes for responsiveness.
 * Compatable with webpack module jquery reference
 * add `allowOverflow` option (by lepolt)
 
-## Version 0.6.0 (2014-08-19T21:12:07Z)
+## Version jquery-0.6.0 (2014-08-19T21:12:07Z)
 
 * add `changeLineHeight` (functionality to resize line-height of parent)
 * greatly improved code readability and comments
 
-## Version 0.5.0 (2014-07-17T15:37:15Z)
+## Version jquery-0.5.0 (2014-07-17T15:37:15Z)
 
 * made option `widthOnly` imply 'whitespace:nowrap'
 
-## Version 0.4.0 (2013-08-16T17:17:02Z)
+## Version jquery-0.4.0 (2013-08-16T17:17:02Z)
 
 * add tests for callbacks
 * add `fail` callback (#15)
@@ -45,52 +48,52 @@ Update size when page resizes for responsiveness.
 
 Height will not cause failure when `widthOnly` is set as long as width can fit into the container.
 
-## Version 0.3.5 (2013-05-08T00:40:22Z)
+## Version jquery-0.3.5 (2013-05-08T00:40:22Z)
 
 * merge patch for compatibility to ZeptoJS (by sagens42 #13)
 
-## Version 0.3.4 (2013-04-10T03:55:51Z)
+## Version jquery-0.3.4 (2013-04-10T03:55:51Z)
 
 * fix error when no console.debug.
 * add test for debug flag.
 
-## Version 0.3.3 (2013-03-25T23:35:21Z)
+## Version jquery-0.3.3 (2013-03-25T23:35:21Z)
 
 * retag for including the manefest in the tag.
 
-## Version 0.3.2 (2013-02-09T02:43:32Z)
+## Version jquery-0.3.2 (2013-02-09T02:43:32Z)
 
 * fix introduced global variable fontSize by `_sizing()`
 * fix container too small for bigger font size setting (#11)
 
-## Version 0.3.1 (2013-01-27T05:10:51Z)
+## Version jquery-0.3.1 (2013-01-27T05:10:51Z)
 
 * Add `debug` option.
 * Fix a couple of bugs, they didn't size up as big as possible
 
-## Version 0.3 (2013-01-04T16:27:52Z)
+## Version jquery-0.3 (2013-01-04T16:27:52Z)
 
 * Allow to use *MaxFontPixels <= 0* to make sizing as big as possible.
 
-## Version 0.2.1 (2012-11-11T07:04:20Z)
+## Version jquery-0.2.1 (2012-11-11T07:04:20Z)
 
 * Add explicitWidth and explicitHeight options (#6)
 
-## Version 0.2 (2012-07-02T17:13:27Z)
+## Version jquery-0.2 (2012-07-02T17:13:27Z)
 
 * Fix resizing algorithm (#3)
 * Add option widthOnly for header tags (#4)
 
-## Version 0.1.3 (2012-03-27T04:03:30Z)
+## Version jquery-0.1.3 (2012-03-27T04:03:30Z)
 
 * Add callbacks for each filled and all filled. (by alex-pex #2)
 
-## Version 0.1.2 (2012-01-29T12:46:12Z)
+## Version jquery-0.1.2 (2012-01-29T12:46:12Z)
 
 * Use binary search instead of plain do-while to accelerate the function.
   (by acsaga #1)
 
-## Version 0.1.1
+## Version jquery-0.1.1
 
 *  Add minFontPixels parameter
 
@@ -98,7 +101,7 @@ Height will not cause failure when `widthOnly` is set as long as width can fit i
 
 *  This project was moved to GitHub and licensed under the MIT License.
 
-## Version 0.1
+## Version jquery-0.1.0
 
 *  Released in May 2009.
 
