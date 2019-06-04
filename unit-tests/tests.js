@@ -56,7 +56,7 @@ QUnit.test('size up to max', function (assert) {
   var $jtf = $('#' + JTF);
   var $span = $jtf.find('span');
   $jtf.textfill({debug: true, maxFontPixels: 0});
-  assert.equal($span.css('font-size'), '172px');
+  assert.equal($span.css('font-size'), '190px');
 });
 
 
@@ -78,7 +78,7 @@ QUnit.test('width be maxWidth', function (assert) {
   var $jtf = $('#' + JTF);
   var $span = $jtf.find('span');
   $jtf.textfill({debug: true, maxFontPixels: 0});
-  assert.equal($span.css('font-size'), '119px');
+  assert.equal($span.css('font-size'), '141px');
 });
 
 
@@ -100,7 +100,7 @@ QUnit.test('height be maxHeight', function (assert) {
   var $jtf = $('#' + JTF);
   var $span = $jtf.find('span');
   $jtf.textfill({debug: true, maxFontPixels: 0});
-  assert.equal($span.css('font-size'), '158px');
+  assert.equal($span.css('font-size'), '143px');
 });
 
 
@@ -154,7 +154,7 @@ QUnit.test('minFontPixels too big to fit in, but widthOnly = True and width fits
     maxFontPixels: 100,
     widthOnly: true
   });
-  assert.equal($span.css('font-size'), '60px');
+  assert.equal($span.css('font-size'), '72px');
 });
 
 
