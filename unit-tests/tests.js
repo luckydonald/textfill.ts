@@ -1,7 +1,7 @@
 /*global QUnit,$*/
 
 /**
- * Unit Tests for jQuery TextFill.
+ * Unit Tests for TextFill.
  */
 
 var JTF = 'jtf';
