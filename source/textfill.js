@@ -1,5 +1,5 @@
 /*
-Jetroid/textfill.js v1.0.2, 2019
+Jetroid/textfill.js v1.0.3, 2019
 Adapted from jquery-textfill/jquery-textfill, v0.6.2, Feb 2018
 
 Usage:
@@ -101,7 +101,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 		// Outputs all information on the current sizing
 		// of the font.
 		// For arguments, see _sizing(), below
-		function _debug_sizing(prefix, ourText, maxHeight, maxWidth, minFontPixels, maxFontPixels, fontSize) {
+		function _debug_sizing(prefix, ourText, maxHeight, maxWidth, minFontPixels, maxFontPixels, fontSize, lineHeight, letterSpacing) {
 
 			function _m(v1, v2) {
 
@@ -115,15 +115,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 				}
 				return marker;
 			}
-
-			_debug(
-				'[TextFill] '  + prefix + ' { ' +
-				'font-size: ' + fontSize + ',' +
-				'Height: '    + ourText.offsetHeight + 'px ' + _m(ourText.offsetHeight, maxHeight) + maxHeight + 'px,' +
-				'Width: '     + ourText.offsetWidth  + _m(ourText.offsetWidth , maxWidth)  + maxWidth + ',' +
-				'minFontPixels: ' + minFontPixels + 'px, ' +
-				'maxFontPixels: ' + maxFontPixels + 'px }'
-			);
+			if (options.debug) {
+				_debug(
+					'[TextFill] '  + prefix + ' { ' +
+					'font-size: ' + fontSize + ', ' +
+					'Height: '    + ourText.offsetHeight + 'px ' + _m(ourText.offsetHeight, maxHeight) + maxHeight + 'px, ' +
+					'Width: '     + ourText.offsetWidth  + _m(ourText.offsetWidth , maxWidth)  + maxWidth + ', ' +
+					'minFontPixels: ' + minFontPixels + 'px, ' +
+					'maxFontPixels: ' + maxFontPixels + 'px, }'
+				);
+			}
 		}
 
 		/**
@@ -145,13 +146,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 		 *
 		 * @return Size (in pixels) that the font can be resized.
 		 */
-		function _sizing(prefix, ourText, measurement, max, maxHeight, maxWidth, minFontPixels, maxFontPixels) {
+		function _sizing(prefix, ourText, measurement, max, maxHeight, maxWidth, minFontPixels, maxFontPixels, oldFontSize, lineHeight, letterSpacing) {
 
 			_debug_sizing(
 				prefix, ourText,
 				maxHeight, maxWidth,
 				minFontPixels, maxFontPixels,
-				'font size not yet calculated'
+				oldFontSize
 			);
 
 			// The kernel of the whole plugin, take most attention
@@ -178,6 +179,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 				var fontSize = Math.floor((minFontPixels + maxFontPixels) / 2);
 				ourText.style.fontSize = fontSize + "px";
+				ourText.style.letterSpacing = letterSpacing;
+				ourText.style.lineHeight = lineHeight;
+
 				var curSize = ourText[measurement];
 
 				if (curSize <= max) {
@@ -194,11 +198,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 				_debug_sizing(
 					prefix, ourText,
 					maxHeight, maxWidth,
-					minFontPixels, maxFontPixels, fontSize
+					minFontPixels, maxFontPixels,
+					fontSize
 				);
 			}
 
 			ourText.style.fontSize = maxFontPixels + "px";
+			ourText.style.letterSpacing = letterSpacing;
+			ourText.style.lineHeight = lineHeight;
 
 			if (ourText[measurement] <= max) {
 				minFontPixels = maxFontPixels;
@@ -262,10 +269,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 			var maxHeight = options.explicitHeight || parent.offsetHeight;
 			var maxWidth  = options.explicitWidth  || parent.offsetWidth;
 
-			var oldFontSize   = ourTextComputedStyle.getPropertyValue("font-size");
-			var oldLineHeight = ourTextComputedStyle.getPropertyValue("line-height");
+			var oldFontSize      = ourTextComputedStyle.getPropertyValue("font-size");
+			var oldLineHeight    = ourTextComputedStyle.getPropertyValue("line-height");
+			var oldLetterSpacing = ourTextComputedStyle.getPropertyValue("letter-spacing");
 
-			var lineHeight  = parseFloat(oldLineHeight) / parseFloat(oldFontSize);
+			var lineHeight    = parseFloat(oldLineHeight) / parseFloat(oldFontSize);
+			var letterSpacing = parseFloat(oldLetterSpacing) / parseFloat(oldFontSize);
 
 			var minFontPixels = options.minFontPixels;
 
@@ -286,7 +295,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 					'Height', ourText,
 					'offsetHeight', maxHeight,
 					maxHeight, maxWidth,
-					minFontPixels, maxFontPixels
+					minFontPixels, maxFontPixels,
+					oldFontSize,
+					lineHeight, letterSpacing
 				);
 			}
 
@@ -304,7 +315,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 				'Width', ourText,
 				'offsetWidth', maxWidth,
 				maxHeight, maxWidth,
-				minFontPixels, maxFontPixels
+				minFontPixels, maxFontPixels,
+				oldFontSize,
+				lineHeight, letterSpacing
 			);
 
 			// 3. Actually resize the text!
@@ -327,6 +340,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 				(ourText.offsetHeight > maxHeight && !options.widthOnly && !options.allowOverflow)) { 
 
 				ourText.style.fontSize = oldFontSize;
+				ourText.style.letterSpacing = letterSpacing;
+				ourText.style.lineHeight = lineHeight;
+
 
 				// Failure callback
 				if (options.fail) {

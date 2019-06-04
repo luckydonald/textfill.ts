@@ -13,6 +13,9 @@ Update size when page resizes for responsiveness.
 
 ## Development
 
+## Version 1.0.3
+* Text resizing now respects line-height and letter-spacing settings. (by zhengs)
+
 ## Version 1.0.2
 * Change maxFontPixels default to 0; unless otherwise specified, the font-size will fill the container.
 
