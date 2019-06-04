@@ -1,0 +1,27 @@
+{
+  "name": "textfilljs",
+  "version": "1.0.1",
+  "description": "A javascript library to resize text to make it fit into a container. The font size gets as big as possible (or within limits that you set).",
+  "main": "source/textfill.js",
+  "scripts": {
+    "test": "echo \"Open unit-tests/tests.html in your browser\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jetroid/textfill.js.git"
+  },
+  "keywords": [
+    "text", "resize", "font-size", "jquery-textfill", "textfill", "bigtext", "big-text"
+  ],
+  "contributors": [
+    "Russ Painter",
+    "Yu-Jie Lin",
+    "Alexandre Dantas"
+  ],
+  "author": "Jet Holt",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Jetroid/textfill.js/issues"
+  },
+  "homepage": "https://github.com/Jetroid/textfill.js#readme"
+}

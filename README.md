@@ -30,7 +30,7 @@ Create your elements. Make sure to:
 Import and run the TextFill function:
 
 ```javascript
-import TextFill from 'textfill.js';
+import TextFill from 'textfilljs';
 
 TextFill("#myelement",{
   ...options...
