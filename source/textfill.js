@@ -1,11 +1,11 @@
 /*
-Jetroid/textfill.js v1.0.0, 2019
+Jetroid/textfill.js v1.0.2, 2019
 Adapted from jquery-textfill/jquery-textfill, v0.6.2, Feb 2018
 
 Usage:
 TextFill(".some-selector",{
 	minFontPixels: {Number}, {4}
-	maxFontPixels: {Number}, {40}
+	maxFontPixels: {Number}, {0}
 	innerTag: {Selector}, {span}
 	widthOnly: {Boolean}, {false}
 	explicitWidth: {Number}, {null}
@@ -52,7 +52,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 		var defaultOptions = {
 			debug            : false,
-			maxFontPixels    : 40,
+			maxFontPixels    : 0,
 			minFontPixels    : 4,
 			innerTag         : 'span',
 			widthOnly        : false,

@@ -13,6 +13,9 @@ Update size when page resizes for responsiveness.
 
 ## Development
 
+## Version 1.0.2
+* Change maxFontPixels default to 0; unless otherwise specified, the font-size will fill the container.
+
 ## Version 1.0.0
 * Remove JQuery Dependency
 

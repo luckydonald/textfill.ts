@@ -1,6 +1,6 @@
 {
   "name": "textfilljs",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A javascript library to resize text to make it fit into a container. The font size gets as big as possible (or within limits that you set).",
   "main": "source/textfill.js",
   "scripts": {

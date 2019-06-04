@@ -72,10 +72,12 @@ Remember, **container** means the _parent_ element, while **child** is the
 element that will _resize_. In the examples above (in the _Quick Start Guide_),
 the parent was the `div` and the child was the `span`.
 
+**Note: Unlike [the jQuery plugin][plugin] that this project is based on, the `maxFontPixels` default is now `0`.**
+
 | Name              | Description | Default Value |
 | ----------------- | ----------- | ------------- |
-| `minFontPixels`   | Minimal font size (in pixels). The text will shrink up to this value. | 4 |
-| `maxFontPixels`   | Maximum font size (in pixels). The text will stretch up to this value.. If it's a negative value (`size <= 0`), the text will stretch to as big as the container can accommodate. | 40 |
+| `minFontPixels`   | Minimal font size (in pixels). The text will shrink up to this value. | `4` |
+| `maxFontPixels`   | Maximum font size (in pixels). The text will stretch up to this value.. If it's a negative value (`size <= 0`), the text will stretch to as big as the container can accommodate. | `0` |
 | `innerTag`        | The child element tag to resize. We select it by using `container.querySelector(innerTag)` | `span` |
 | `widthOnly`       | Will only resize to the width restraint. The font might become tiny under small containers.  | `false` |
 | `explicitWidth`   | Explicit width to resize. Defaults to the container's width. | `null` |
@@ -127,7 +129,7 @@ If you found something critical or just want to make a suggestion or ask a quest
 
 ## Credits
 
-[JQuery-Textfill] The [jQuery plugin](https://github.com/jquery-textfill/jquery-textfill) was created by [Russ Painter][russ] around May 2009,
+[JQuery-Textfill] The [jQuery plugin][plugin] was created by [Russ Painter][russ] around May 2009,
 beginning with a StackOverflow [question][soq].
 
 [JQuery-Textfill] In very early 2012, [Yu-Jie Lin][yu] helped to move the project to GitHub with
@@ -146,6 +148,7 @@ version _0.1_ and obtained the clearly stated open source licensing from Russ.
 [demo]:   http://jquery-textfill.github.io/example/
 [tests]:  http://jquery-textfill.github.io/unit-tests
 [issue]:  https://github.com/jquery-textfill/jquery-textfill/issues
+[plugin]: https://github.com/jquery-textfill/jquery-textfill/
 [soq]:    http://stackoverflow.com/questions/687998/auto-size-dynamic-text-to-fill-fixed-size-container
 [russ]:   https://github.com/GeekyMonkey
 [yu]:     https://github.com/livibetter
