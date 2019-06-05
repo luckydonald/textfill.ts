@@ -1,5 +1,10 @@
-var JTF = 'jtf';
+/*global QUnit,$*/
 
+/**
+ * Unit Tests for TextFill.
+ */
+
+var JTF = 'jtf';
 
 function setup(opts) {
   var $t = $('#qunit-fixture');
@@ -7,8 +12,16 @@ function setup(opts) {
   var $s = $('<span/>', opts.span).appendTo($d);
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Basic Tests
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-test('capped at 10px', function () {
+QUnit.assert.inValueList = function( needle, haystack, message ) {
+  var actual = haystack.indexOf(needle) > -1;
+  QUnit.push(actual, needle, "any value from [" + haystack.join(",")+"]", message);
+};
+
+QUnit.test('capped at 10px', function (assert) {
   setup({
     div: {
       id: JTF,
@@ -17,7 +30,7 @@ test('capped at 10px', function () {
     },
     span: {
       css: {
-        'font-family': 'VT323',
+        'font-family': 'VT323'
       },
       text: 'test'
     }
@@ -25,12 +38,12 @@ test('capped at 10px', function () {
 
   var $jtf = $('#' + JTF);
   var $span = $jtf.find('span');
-  $jtf.textfill({debug: true, maxFontPixels: 10});
-  equal($span.css('font-size'), '10px');
+  TextFill('#'+JTF,{debug: true, maxFontPixels: 10});
+  assert.inValueList($span.css('font-size'), ['10px']);
 });
 
 
-test('size up to max', function () {
+QUnit.test('size up to max', function (assert) {
   setup({
     div: {
       id: JTF,
@@ -39,7 +52,7 @@ test('size up to max', function () {
     },
     span: {
       css: {
-        'font-family': 'VT323',
+        'font-family': 'VT323'
       },
       text: 'test'
     }
@@ -47,12 +60,12 @@ test('size up to max', function () {
 
   var $jtf = $('#' + JTF);
   var $span = $jtf.find('span');
-  $jtf.textfill({debug: true, maxFontPixels: 0});
-  equal($span.css('font-size'), '172px');
+  TextFill('#'+JTF,{debug: true, maxFontPixels: 0});
+  assert.inValueList($span.css('font-size'), ['190px','189px']);
 });
 
 
-test('width be maxWidth', function () {
+QUnit.test('width be maxWidth', function (assert) {
   setup({
     div: {
       id: JTF,
@@ -61,7 +74,7 @@ test('width be maxWidth', function () {
     },
     span: {
       css: {
-        'font-family': 'VT323',
+        'font-family': 'VT323'
       },
       text: 'test'
     }
@@ -69,12 +82,12 @@ test('width be maxWidth', function () {
 
   var $jtf = $('#' + JTF);
   var $span = $jtf.find('span');
-  $jtf.textfill({debug: true, maxFontPixels: 0});
-  equal($span.css('font-size'), '119px');
+  TextFill('#'+JTF,{debug: true, maxFontPixels: 0});
+  assert.inValueList($span.css('font-size'), ['141px','142px']);
 });
 
 
-test('height be maxHeight', function () {
+QUnit.test('height be maxHeight', function (assert) {
   setup({
     div: {
       id: JTF,
@@ -83,7 +96,7 @@ test('height be maxHeight', function () {
     },
     span: {
       css: {
-        'font-family': 'VT323',
+        'font-family': 'VT323'
       },
       text: 'test'
     }
@@ -91,12 +104,12 @@ test('height be maxHeight', function () {
 
   var $jtf = $('#' + JTF);
   var $span = $jtf.find('span');
-  $jtf.textfill({debug: true, maxFontPixels: 0});
-  equal($span.css('font-size'), '158px');
+  TextFill('#'+JTF,{debug: true, maxFontPixels: 0});
+  assert.inValueList($span.css('font-size'), ['143px']);
 });
 
 
-test('minFontPixels too big to fit in', function () {
+QUnit.test('minFontPixels too big to fit in', function (assert) {
   setup({
     div: {
       id: JTF,
@@ -114,12 +127,16 @@ test('minFontPixels too big to fit in', function () {
 
   var $jtf = $('#' + JTF);
   var $span = $jtf.find('span');
-  $jtf.textfill({debug: true, minFontPixels: 100, maxFontPixels: 0});
-  equal($span.css('font-size'), '20px');
+  TextFill('#'+JTF,{debug: true, minFontPixels: 100, maxFontPixels: 0,
+    fail: function(e) {
+        assert.ok(e, "TextFill attempt should fail.");
+    }
+  });
+  assert.inValueList($span.css('font-size'), ['20px']);
 });
 
 
-test('minFontPixels too big to fit in, but widthOnly = True and width fits', function () {
+QUnit.test('minFontPixels too big to fit in, but widthOnly = True and width fits', function (assert) {
   // @ fontSize = 60 => H > 10, W = 100
   setup({
     div: {
@@ -140,17 +157,17 @@ test('minFontPixels too big to fit in, but widthOnly = True and width fits', fun
 
   var $jtf = $('#' + JTF);
   var $span = $jtf.find('span');
-  $jtf.textfill({
+  TextFill('#'+JTF,{
     debug: true,
     minFontPixels: 20,
     maxFontPixels: 100,
     widthOnly: true
   });
-  equal($span.css('font-size'), '60px');
+  assert.inValueList($span.css('font-size'), ['72px']);
 });
 
 
-test('minFontPixels too big to fit in, W/H both fail, even widthOnly = True', function () {
+QUnit.test('minFontPixels too big to fit in, W/H both fail, even widthOnly = True', function (assert) {
   setup({
     div: {
       id: JTF,
@@ -160,7 +177,7 @@ test('minFontPixels too big to fit in, W/H both fail, even widthOnly = True', fu
     span: {
       css: {
         'font-family': 'VT323',
-        'font-size': '20px',
+        'font-size': '20px'
       },
       text: 'test'
     }
@@ -168,21 +185,48 @@ test('minFontPixels too big to fit in, W/H both fail, even widthOnly = True', fu
 
   var $jtf = $('#' + JTF);
   var $span = $jtf.find('span');
-  $jtf.textfill({
+  TextFill('#'+JTF,{
     debug: true,
     minFontPixels: 20,
     maxFontPixels: 100,
     widthOnly: true
   });
-  equal($span.css('font-size'), '20px');
+  assert.inValueList($span.css('font-size'), ['20px']);
 });
 
 
-/*************/
-/* callbacks */
-/*************/
+QUnit.test('allowOverflow will not result in fail callback', 1, function (assert) { 
+  setup({
+    div: {
+      id: JTF,
+      width: 60,
+      height: 60
+    },
+    span: {
+      css: {
+        'font-family': 'VT323'
+      },
+      text: 'This text will cause overflow to occur, but will not result in a fail callback.'
+    }
+  });
+  var $jtf = $('#' + JTF);
+  TextFill('#'+JTF,{
+    minFontPixels: 14,
+    allowOverflow: true,
+    fail: function(e) {
+      assert.ok(false, 'fail callback should not have been called');
+    },
+    success: function (e) {
+      assert.equal(e, $jtf[0]);
+    }
+  });
+});
 
-test('success callback', 1, function() {
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Callbacks
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+QUnit.test('success callback', 1, function(assert) {
   setup({
     div: {
       id: JTF,
@@ -191,7 +235,7 @@ test('success callback', 1, function() {
     },
     span: {
       css: {
-        'font-family': 'VT323',
+        'font-family': 'VT323'
       },
       text: 'test'
     }
@@ -199,44 +243,17 @@ test('success callback', 1, function() {
 
   var $jtf = $('#' + JTF);
   var $span = $jtf.find('span');
-  $jtf.textfill({
+  TextFill('#'+JTF,{
     debug: true,
     maxFontPixels: 0,
     success: function(e) {
-      equal(e, $jtf[0]);
+      assert.equal(e, $jtf[0]);
     }
   });
 });
 
 
-test('callback callback (deprecated)', 1, function() {
-  setup({
-    div: {
-      id: JTF,
-      width: 285,
-      height: 210
-    },
-    span: {
-      css: {
-        'font-family': 'VT323',
-      },
-      text: 'test'
-    }
-  });
-
-  var $jtf = $('#' + JTF);
-  var $span = $jtf.find('span');
-  $jtf.textfill({
-    debug: true,
-    maxFontPixels: 0,
-    callback: function(e) {
-      equal(e, $jtf[0]);
-    }
-  });
-});
-
-
-test('fail callback', 1, function () {
+QUnit.test('fail callback', 1, function (assert) {
   setup({
     div: {
       id: JTF,
@@ -246,7 +263,7 @@ test('fail callback', 1, function () {
     span: {
       css: {
         'font-family': 'VT323',
-        'font-size': '20px',
+        'font-size': '20px'
       },
       text: 'test'
     }
@@ -254,18 +271,18 @@ test('fail callback', 1, function () {
 
   var $jtf = $('#' + JTF);
   var $span = $jtf.find('span');
-  $jtf.textfill({
+  TextFill('#'+JTF,{
     debug: true,
     minFontPixels: 100,
     maxFontPixels: 0,
     fail: function(e) {
-      equal(e, $jtf[0]);
+      assert.equal(e, $jtf[0]);
     }
   });
 });
 
 
-test('complete callback', 2, function() {
+QUnit.test('complete callback', 1, function(assert) {
   setup({
     div: {
       id: JTF,
@@ -274,31 +291,28 @@ test('complete callback', 2, function() {
     },
     span: {
       css: {
-        'font-family': 'VT323',
+        'font-family': 'VT323'
       },
       text: 'test'
     }
   });
 
   var $jtf = $('#' + JTF);
-  $jtf.textfill({
+  TextFill('#'+JTF,{
     debug: true,
     maxFontPixels: 0,
-    callback: function(e) {
-      equal(e, $jtf[0]);
-    },
     complete: function(e) {
-      equal(e, $jtf);
+      assert.equal(e, undefined);
     }
   });
 });
 
 
-/****************/
-/* debug option */
-/****************/
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * "Debug" option
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-module('debug option', {
+QUnit.module('debug option', {
   setup: function () {
     if (console.debug_original) {
       throw 'console.debug_original already has value.';
@@ -307,7 +321,7 @@ module('debug option', {
     console.debug_called = false;
     console.debug = function () {
       console.debug_called = true;
-    }
+    };
   },
   teardown: function () {
     if (!console.debug_original) {
@@ -320,7 +334,7 @@ module('debug option', {
 });
 
 
-test('debug used', function () {
+QUnit.test('debug used', function (assert) {
   setup({
     div: {
       id: JTF,
@@ -329,19 +343,19 @@ test('debug used', function () {
     },
     span: {
       css: {
-        'font-family': 'VT323',
+        'font-family': 'VT323'
       },
       text: 'test'
     }
   });
 
   var $jtf = $('#' + JTF);
-  $jtf.textfill({debug: true, maxFontPixels: 10});
-  equal(console.debug_called, true);
+  TextFill('#'+JTF,{debug: true, maxFontPixels: 10});
+  assert.equal(console.debug_called, true);
 });
 
 
-test('debug not used', function () {
+QUnit.test('debug not used', function (assert) {
   setup({
     div: {
       id: JTF,
@@ -350,15 +364,13 @@ test('debug not used', function () {
     },
     span: {
       css: {
-        'font-family': 'VT323',
+        'font-family': 'VT323'
       },
       text: 'test'
     }
   });
 
   var $jtf = $('#' + JTF);
-  $jtf.textfill({debug: false, maxFontPixels: 10});
-  equal(console.debug_called, false);
+  TextFill('#'+JTF,{debug: false, maxFontPixels: 10});
+  assert.equal(console.debug_called, false);
 });
-
-

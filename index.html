@@ -3,6 +3,7 @@
 
   <head>
     <meta charset='utf-8'>
+    <title>textfill.js</title>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <meta name="description" content="textfill.js: A JavaScript library to resize text to make it fit into a container. The font size gets as big as possible (or within limits that you set).">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
@@ -27,15 +28,14 @@
         margin-bottom: 100px;
       }
     </style>
-    <title>textfilljs</title>
     <script type="text/javascript">
 window.onload = function() {
-  TextFill("div#div1");
+    TextFill("div#div1");
 
     TextFill("div#div2");
 
     TextFill("div#div3",{
-        fontSizeFactor: 1
+        maxFontPixels: 50
     });
 
     TextFill("div#div4",{
@@ -110,13 +110,25 @@ window.onload = function() {
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-Avaiable on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>. Full documentation available on <a href="https://github.com/Jetroid/textfill.js">GitHub</a>
+Available on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>, or standalone at . Full documentation available on <a href="https://github.com/Jetroid/textfill.js">GitHub</a>
 
     <h2>Example1</h2>
-    div size: width: 300px; height: 200px; <br />
-    Simple example. Makes the text as big as possible without overflowing the parent div.
+    Simple example with a few of the alternatives for calling TextFill on an element. Makes the text in the span as big as possible without overflowing the parent div.<br />
+    HTML:
     <pre>
-        TextFill("div#div1");
+        &lt;div id="div1" style="width: 300px; height: 200px"&gt;
+          &lt;span&gt;
+            Testing TextFill
+          &lt;/span&gt;
+        &lt;/div&gt;<https://banana.com>
+    </pre>
+    Javascript:
+    <pre>
+        TextFill("#div1");
+        //or
+        TextFill("div"); // This will TextFill all divs.
+        //or
+        TextFill(document.getElementById("#div1"));
     </pre>
     <div  id="div1" class="test-div" style="
         width: 300px;
@@ -129,8 +141,8 @@ Avaiable on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>. Full
 
 
     <h2>Example2</h2>
-    div size: width: 800px; height: 100px; <br />
-    Same as Example1 but with a different size div. Notice that textfill.js checks both heights and widths to prevent overflowing.
+    Same as Example1 but with a different size div. Notice that textfill.js checks both heights and widths to prevent overflowing, and allows for text wrapping. <br />
+    div size: width: 800px; height: 100px;  
     <pre>
         TextFill("div#div2");
     </pre>
@@ -147,10 +159,10 @@ Avaiable on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>. Full
 
     <h2>Example3</h2>
     div size: width: 800px; height: 100px; <br />
-    Same as Example2 but with fontSizeFactor set to 1. fontSizeFactor default is 0.8, it's used to give some vertical spacing for letters that overflow the line-height (like 'g', 'Á' and most other accentuated uppercase letters). This does not affect the font-size if the limiting factor is the width of the parent div.
+    Same as Example2 but with maxFontPixels set to 50px. Regardless of what the maximum font size could be, TextFill will respect that option and never exceed 50px font-size. 
     <pre>
         TextFill("div#div3",{
-            fontSizeFactor: 1
+            maxFontPixels: 50
         });
     </pre>
     <div id="div3" class="test-div" style="
@@ -162,16 +174,16 @@ Avaiable on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>. Full
 
 
   <h2>Example4</h2>
-    div size: width: 800px; height: 100px; <br />
-    Horizontal alignment
+    div size: width: 200px; height: 50px; <br />
+    Same as Example3 but with a smaller text box. Although maxFontPixels was set to 50px, TextFill reduced the font-size below 50px so that the text did not overflow the container.
     <pre>
         TextFill("div#div4",{
-            horizontalAlign: "left",
+            maxFontPixels: 50
         });
     </pre>
     <div id="div4" class="test-div" style="
-        width: 800px;
-        height: 100px;
+        width: 200px;
+        height: 50px;
     ">
         <span class="test-span">Testing TextFill</span>
     </div>
