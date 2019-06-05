@@ -83,7 +83,7 @@ QUnit.test('width be maxWidth', function (assert) {
   var $jtf = $('#' + JTF);
   var $span = $jtf.find('span');
   TextFill('#'+JTF,{debug: true, maxFontPixels: 0});
-  assert.inValueList($span.css('font-size'), ['141px','142px']);
+  assert.inValueList($span.css('font-size'), ['141px','142px','143px']);
 });
 
 
