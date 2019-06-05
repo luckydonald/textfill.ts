@@ -46,6 +46,17 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 (function() {
 	var TextFill = function(selector, options){
 
+		// Set up some css style classes so we can easily toggle them on and off without
+		//replacing any inline styles
+		if(document.getElementById("textfill-styles") === null) {
+			var style = document.createElement('style');
+			style.id = "textfill-styles";
+			style.type = 'text/css';
+			style.innerHTML = '.textfill-inline { display: inline !important; }';
+			document.getElementsByTagName('head')[0].appendChild(style);
+		}
+
+
 		//  _____  _______ _______ _____  _____  __   _ _______
 		// |     | |_____|    |      |   |     | | \  | |______
 		// |_____| |          |    __|__ |_____| |  \_| ______|
@@ -181,6 +192,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 				ourText.style.fontSize = fontSize + "px";
 				ourText.style.letterSpacing = letterSpacing;
 				ourText.style.lineHeight = lineHeight;
+				ourText.classList.add("textfill-inline");
 
 				var curSize = ourText[measurement];
 
@@ -329,6 +341,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 			}
 
 			ourText.style.fontSize = fontSizeFinal + "px";
+			ourText.classList.remove("textfill-inline");
 			if (options.changeLineHeight) {
 				parent.style.lineHeight = (lineHeight * fontSizeFinal) + 'px';
 			}
