@@ -39,11 +39,11 @@ window.onload = function() {
     });
 
     TextFill("div#div4",{
-    horizontalAlign: "left",
+        maxFontPixels: 50
     });
 
     TextFill("div#div5",{
-      verticalAlign: "bottom",
+        innerTag: "p",
     });
 
     TextFill("div#div6",{
@@ -120,7 +120,7 @@ Available on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>, or 
           &lt;span&gt;
             Testing TextFill
           &lt;/span&gt;
-        &lt;/div&gt;<https://banana.com>
+        &lt;/div&gt;
     </pre>
     Javascript:
     <pre>
@@ -190,26 +190,28 @@ Available on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>, or 
 
 
   <h2>Example5</h2>
-    div size: width: 200px; height: 200px; <br />
-    Vertical Alignment
+    We can change the inner tag to any inline tag of our choice - we don't just have to use a span.<br />
+    HTML:
     <pre>
-        TextFill("div#div5",{
-            verticalAlign: "bottom",
-        });
+        &lt;div id="div5" style="width: 200px; height: 200px"&gt;
+          &lt;p&gt;
+            Testing TextFill
+          &lt;/p&gt;
+        &lt;/div&gt;
     </pre>
-    <div id="div5" class="test-div" style="
+    Javascript:
+    <pre>
+        TextFill("#div5", {innerTag: "p"});
+    </pre>
+    <div  id="div5" class="test-div" style="
         width: 200px;
         height: 200px;
     ">
-        <span class="test-span">Testing TextFill</span>
+        <p class="test-span">Testing TextFill</p>
     </div>
 
-
-
-
-
     <h2>Example6</h2>
-    div size: width: 100px; height: 300px; <br />
+    div size: width: 300px; height: 10px; <br />
     TextFill on rotated text? yes please! <br />
     Note: TextFill, unlike padding, does not support setting the rotation of the text element on CSS. You must set through the $.TextFill() options.
     <pre>
