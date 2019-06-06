@@ -6,11 +6,35 @@
     <title>textfill.js</title>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <meta name="description" content="textfill.js: A JavaScript library to resize text to make it fit into a container. The font size gets as big as possible (or within limits that you set).">
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=VT323|Happy+Monkey' rel='stylesheet' type='text/css'/>
+      <link href="css/index.css" rel="stylesheet" type="text/css"/>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" media="screen" href="css/stylesheet.css">
     <script type="text/javascript" src="js/textfill.min.js"></script>
     <script type="text/javascript">
+function update() {
+  var monkeysize = parseInt(document.getElementById("monkeymaxsize").value, 10);
+  var monkeyvalue = document.getElementById("monkeydyntext").value;
+  var compsize = parseInt(document.getElementById("compmaxsize").value, 10);
+  var compvalue = document.getElementById("compdyntext").value;
+  document.getElementById("monkey").firstElementChild.innerHTML = monkeyvalue;
+  document.getElementById("terminal").firstElementChild.innerHTML = compvalue;
+  if (!isNaN(monkeysize)) {
+    TextFill('#monkey',{maxFontPixels: monkeysize});
+  }
+  if (!isNaN(compsize)) {
+    TextFill('#terminal',{maxFontPixels: compsize});
+  }
+}
+
 window.onload = function() {
+    document.getElementById('monkeydyntext').onkeyup = function(){update()};
+    document.getElementById('monkeymaxsize').onkeyup = function(){update()};
+    document.getElementById('compdyntext').onkeyup = function(){update()};
+    document.getElementById('compmaxsize').onkeyup = function(){update()};
+    update();
+
     TextFill("div#div1");
 
     TextFill("div#div2");
@@ -25,44 +49,37 @@ window.onload = function() {
 
     TextFill("div#div5");
 
-    TextFill("div#div6a");
-    TextFill("div#div6b");
-    TextFill("div#div6c");
-
-    TextFill("div#div7",{
-        innerTag: "p",
-    });
-
-    var example8= function() { //need to wait font-awesome to load properly before calling the plugin
-      TextFill("div#div8");
-    };
-    setTimeout(example8, 300); //there is no problem calling TextFill multiple times
-    setTimeout(example8, 500); //once font-awesome finishes loading one of these callbacks will properly size the text
-    setTimeout(example8, 800);
-    setTimeout(example8, 1500);
-    setTimeout(example8, 5000);
-
-    TextFill("div#div9",{
-      allowOverflow: true,
-      minFontPixels: 15,
-    });
-
-    TextFill("div#div10",{
+    TextFill("div#div6",{
       widthOnly: true,
       allowOverflow: true
     });
 
-    TextFill("div#div11",{
-      limitingDimension: "height"
+    TextFill("div.div7");
+
+    TextFill("div#div8",{
+        innerTag: "p",
     });
 
-    TextFill("div#div12",{
-      textAlign: "right"
+    var example9= function() { //need to wait font-awesome to load properly before calling the plugin
+      TextFill("div#div9");
+    };
+    setTimeout(example9, 300); //there is no problem calling TextFill multiple times
+    setTimeout(example9, 500); //once font-awesome finishes loading one of these callbacks will properly size the text
+    setTimeout(example9, 800);
+    setTimeout(example9, 1500);
+    setTimeout(example9, 5000);
+
+    TextFill("div#div10a",{
+      allowOverflow: false,
+      minFontPixels: 13,
     });
 
-    TextFill("div#div13");
+    TextFill("div#div10b",{
+      allowOverflow: true,
+      minFontPixels: 13,
+    });
 
-    TextFill("div#complex_div1, div#complex_div2, div#complex_div3, div#complex_div4");
+    TextFill("div#complex-div1, div#complex-div2, div#complex-div3, div#complex-div4");
 }
 </script>
   </head>
@@ -70,30 +87,71 @@ window.onload = function() {
   <body>
 
     <!-- HEADER -->
-    <div id="header_wrap" class="outer">
+    <div id="header-wrap" class="outer">
         <header class="inner">
-          <a id="forkme_banner" href="https://github.com/Jetroid/textfill.js">View on GitHub</a>
+          <a id="forkme-banner" href="https://github.com/Jetroid/textfill.js">View on GitHub</a>
 
-          <h1 id="project_title">textfill.js</h1>
-          <h2 id="project_tagline">A JavaScript library to resize text to make it fit into a container. The font size gets as big as possible.</h2>
+          <h1 id="project-title">textfill.js</h1>
+          <h2 id="project-tagline">A JavaScript library to resize text to make it fit into a container. The font size gets as big as possible.</h2>
 
             <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/Jetroid/textfill.js/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/Jetroid/textfill.js/tarball/master">Download this project as a tar.gz file</a>
+              <a class="zip-download-link" href="https://github.com/Jetroid/textfill.js/zipball/master">Download this project as a .zip file</a>
+              <a class="tar-download-link" href="https://github.com/Jetroid/textfill.js/tarball/master">Download this project as a tar.gz file</a>
             </section>
         </header>
     </div>
 
     <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
+    <div id="main-content-wrap" class="outer">
+      <section id="main-content" class="inner">
 Available on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>, or standalone at . Full documentation available on <a href="https://github.com/Jetroid/textfill.js">GitHub</a>
+
+    <h1>Interactive Demo</h1>
+
+    <div style="width: 800px; height: 350px">
+    <div style="float: left; width: 400px">
+        <div>
+            <label for="monkeydyntext">What is monkey thinking?</label>
+            <input type="text" id="monkeydyntext" value="I think, therefore I am."></input>
+        </div>
+        <div>
+            <label for="maxsize">Maximal font size in pixels for the monkey?</label>
+            <input type="number" id="monkeymaxsize" value="0"></input>
+        </div>
+    </div>
+    <div style=" float: right; width: 400px">
+        <div>
+            <label for="dyntext">What does the computer display?</label>
+            <input type="text" id="compdyntext" value="e=mc²"></input>
+        </div>
+        <div>
+            <label for="maxsize">Maximal font size for the display?</label>
+            <input type="number" id="compmaxsize" value="40"></input>
+        </div>
+    </div>
+    <hr />
+    <div id="monkeythink">
+        <div id="monkey">
+            <span class="dyntextval">I think, therefore I am.</span>
+        </div>
+    </div>
+    <div id="computer">
+        <div id="terminal">
+            <span class="dyntextval">e=mc²</span>
+        </div>
+        <div id="computerglare"></div>
+    </div>
+    </div>
+
+    <h1>Curated Examples</h1>
+
+    A selection of curated examples exploring some features and functionality of TextFill.
 
     <h2>Example 1</h2>
     Simple example with a few of the alternatives for calling TextFill on an element. Makes the text in the span as big as possible without overflowing the parent div.<br /><br />
     HTML:
     <pre>
-        &lt;div id="div1" style="width: 300px; height: 200px"&gt;
+        &lt;div id="div1" class="div1class" style="width: 300px; height: 200px"&gt;
           &lt;span&gt;
             Testing TextFill
           &lt;/span&gt;
@@ -106,6 +164,9 @@ Available on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>, or 
         TextFill("div"); // This will TextFill all divs.
         //or
         TextFill(document.getElementById("#div1"));
+        //or
+        TextFill(".div1class")
+        //...and many more.
     </pre>
     <div  id="div1" class="test-div" style="
         width: 300px;
@@ -119,7 +180,7 @@ Available on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>, or 
 
 
     <h2>Example 2</h2>
-    Same as Example1 but with a different size div. Notice that textfill.js checks both heights and widths to prevent overflowing, and allows for text wrapping. <br /><br />
+    Same as Example 1 but with a different size div. Notice that textfill.js checks both heights and widths to prevent overflowing, and provides automatic text wrapping. <br /><br />
     div size: width: 800px; height: 100px;  
     <div id="div2" class="test-div" style="
         width: 800px;
@@ -133,7 +194,7 @@ Available on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>, or 
 
 
     <h2>Example 3</h2>
-    Same as Example2 but with maxFontPixels set to 50px. Regardless of what the maximum font size could be, TextFill will respect that option and never exceed 50px font-size. 
+    Same as Example 2 but with maxFontPixels set to 50px. Regardless of what the maximum font size could be, TextFill will respect that option and never exceed 50px font-size. 
     <pre>
         TextFill("div#div3",{
             maxFontPixels: 50
@@ -148,8 +209,8 @@ Available on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>, or 
 
 
   <h2>Example 4</h2>
-    div size: width: 200px; height: 50px; <br />
-    Same as Example3 but with a smaller text box. Although maxFontPixels was set to 50px, TextFill reduced the font-size below 50px so that the text did not overflow the container.
+    Same as Example 3 but with a smaller text box. Although maxFontPixels was set to 50px, TextFill reduced the font-size below 50px so that the text did not overflow the container.
+    <br/><br/>div size: width: 200px; height: 50px;
     <pre>
         TextFill("div#div4",{
             maxFontPixels: 50
@@ -169,7 +230,7 @@ Available on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>, or 
     <pre>
         &lt;div id="div5" style="width: 800px; height: 200px"&gt;
           &lt;span&gt;
-            Testing TextFill by writing a big sentence that will wrap.
+            Testing TextFill by writing a long sentence that will wrap.
             &lt;br /&gt
             This text will always be on it's own line.
           &lt;/span&gt;
@@ -177,34 +238,53 @@ Available on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>, or 
     </pre>
     Javascript:
     <pre>
-        TextFill("#div5", {innerTag: "p"});
+        TextFill("#div5");
     </pre>
     <div  id="div5" class="test-div" style="
         width: 800px;
         height: 200px;
     ">
-        <span class="test-span">Testing TextFill by writing a big sentence that will wrap.<br />
+        <span class="test-span">Testing TextFill by writing a long sentence that will wrap.<br />
             This text will always be on it's own line.</span>
     </div>
 
     <h2>Example 6</h2>
+    If you want to prevent TextFill from adding line breaks, and instead ensure that text always stays on one like, you can enable this with the <i>widthOnly</i> option. May cause text to become very small.
+    <pre>
+    TextFill("div#div6",{
+      widthOnly: true;
+    });
+    </pre>
+    <div id="div6" class="test-div" style="
+        width: 600px;
+        height: 60px;
+    ">
+        <span  class="test-span">Testing TextFill. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam ullamcorper mattis semper.</span>
+    </div>
+
+    <h2>Example 7</h2>
     TextFill reponds to font-relative `line-height` and `letter-spacing`.<br /><br />
+    <pre>
+    TextFill("div.div7");
+    </pre>
+
     In this example, `line-height` is set to 4 and manual line breaks have been inserted between the two words.
-    <div id="div6a" class="test-div" style="
+
+    <div class="test-div div7" style="
         width: 800px;
         height: 100px;
     ">
         <span class="test-span" style="line-height: 4;">Testing<br/>TextFill</span>
     </div>
     In this example, `letter-spacing` is set to `4em`.
-    <div id="div6b" class="test-div" style="
+    <div class="test-div div7" style="
         width: 800px;
         height: 75px;
     ">
         <span class="test-span" style="letter-spacing: 4em">Testing TextFill</span>
     </div>
     In this example, `line-height` is set to 4, whilst `letter-spacing` is set to `4em`.
-    <div id="div6c" class="test-div" style="
+    <div class="test-div div7" style="
         width: 800px;
         height: 75px;
     ">
@@ -212,11 +292,11 @@ Available on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>, or 
     </div>
 
 
-    <h2>Example 7</h2>
-    We can change the inner tag to any inline tag of our choice using the _innerTag_ option. We aren't restricted to just using a span.<br />
+    <h2>Example 8</h2>
+    We can change the inner tag to any inline tag of our choice using the <i>innerTag</i> option. We aren't restricted to just using a span.<br />
     HTML:
     <pre>
-        &lt;div id="div7" style="width: 200px; height: 200px"&gt;
+        &lt;div id="div8" style="width: 200px; height: 200px"&gt;
           &lt;p&gt;
             Testing TextFill
           &lt;/p&gt;
@@ -224,9 +304,9 @@ Available on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>, or 
     </pre>
     Javascript:
     <pre>
-        TextFill("#div7", {innerTag: "p"});
+        TextFill("#div8", {innerTag: "p"});
     </pre>
-    <div  id="div7" class="test-div" style="
+    <div  id="div8" class="test-div" style="
         width: 200px;
         height: 200px;
     ">
@@ -234,11 +314,11 @@ Available on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>, or 
     </div>
 
 
-    <h2>Example 8</h2>
+    <h2>Example 9</h2>
     The child element of the tag you call TextFill() on can have other elements inside it. If you set the font-size in the em unit in these elements you can have bigger text followed by smaller text like below. Using this technique you can also have any kind of text, like <a href='http://fortawesome.github.io/Font-Awesome/'>font-awesome</a> icons.<br />
   HTML:
   <pre>
-    &lt;div id="div8" style="width: 350px; height: 100px"&gt;
+    &lt;div id="div9" style="width: 350px; height: 100px"&gt;
       &lt;span&gt;
         &lt;i class="fa fa-home" style="font-size: 1.3em"&gt;&lt;/i&gt;
         &lt;span style="font-size: 1.2em"&gt;Big&lt;/span&gt;
@@ -249,9 +329,9 @@ Available on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>, or 
   </pre>
   Javascript:
     <pre>
-        TextFill("div#div8");
+        TextFill("div#div9");
     </pre>
-    <div id="div8" class="test-div" style="
+    <div id="div9" class="test-div" style="
         width: 350px;
         height: 100px;
     ">
@@ -264,54 +344,60 @@ Available on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>, or 
     </div>
 
 
-    <h2>Example 9</h2>
-    Minimum font size option with allowOverflow. When the size would be 
-    <pre>
-    TextFill("div#div9",{
-      allowOverflow: true,
-      minFontPixels: 15,
+    <h2>Example 10</h2>
+    We can also set a minimum font size that TextFill can never go below using <i>minFontPixels</i>. With the <i>allowOverflow</i> option being set to <i>false</i> (the default), TextFill will fail to resize the text, effectively doing nothing.<br/>
+     <pre>
+    //This fails and does nothing
+    TextFill("div#div10a",{
+      allowOverflow: false,
+      minFontPixels: 13,
     });
     </pre>
-    <div id="div9" class="test-div" style="
+    <div id="div10a" class="test-div" style="
+        width: 600px;
+        height: 100px;
+    ">
+        <span  class="test-span">Testing TextFill. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam ullamcorper mattis semper. Sed placerat ac mi a cursus. Nulla vulputate felis nec nisi eleifend, ac gravida arcu vulputate. Morbi iaculis justo nec eros accumsan, vel mattis metus tincidunt. Morbi tincidunt sed nisl quis efficitur. Donec euismod sem at consequat sagittis. Nulla magna ipsum, pellentesque eget odio at, pulvinar suscipit nisl. In hac habitasse platea dictumst. Proin semper erat vitae orci aliquet sollicitudin. Duis facilisis venenatis iaculis. In at malesuada felis. Sed ornare eu dui id dignissim. Nullam sed nisi vitae ex dictum molestie non ut libero. Nam ut vulputate felis.</span>
+    </div>
+    <br/>
+    <br/>
+    <br/>
+    <i>The above text remained at the same font size it had before TextFill was applied.</i><br/>
+    <br/>
+    With <i>allowOverflow</i> set to <i>true</i>, the text will be resized down to the minimum pixels (if not bigger when the container is big enough), and any excess text is allowed to overflow the container.
+    <pre>
+    TextFill("div#div10b",{
+      allowOverflow: true,
+      minFontPixels: 13,
+    });
+    </pre>
+    <div id="div10b" class="test-div" style="
         width: 600px;
         height: 100px;
     ">
         <span  class="test-span">Testing TextFill. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam ullamcorper mattis semper. Sed placerat ac mi a cursus. Nulla vulputate felis nec nisi eleifend, ac gravida arcu vulputate. Morbi iaculis justo nec eros accumsan, vel mattis metus tincidunt. Morbi tincidunt sed nisl quis efficitur. Donec euismod sem at consequat sagittis. Nulla magna ipsum, pellentesque eget odio at, pulvinar suscipit nisl. In hac habitasse platea dictumst. Proin semper erat vitae orci aliquet sollicitudin. Duis facilisis venenatis iaculis. In at malesuada felis. Sed ornare eu dui id dignissim. Nullam sed nisi vitae ex dictum molestie non ut libero. Nam ut vulputate felis.</span>
     </div>
     <br />
-    <br />
-    Note: Text overflow above is intentional.
+    <i>Note: Text overflow above is intentional.</i>
 
 
-    <h2>Example10</h2>
-    Resize text, preventing wrapping, with the `widthOnly` option.
-    <pre>
-    TextFill("div#div10",{
-      widthOnly: true;
-    });
-    </pre>
-    <div id="div10" class="test-div" style="
-        width: 600px;
-        height: 60px;
-    ">
-        <span  class="test-span">Testing TextFill. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam ullamcorper mattis semper.</span>
-    </div>
+    
 
     <h2>Final Example</h2>
-    A more complex arrangement
+    A more complex arrangement. We can run the function on all four divs in the same TextFill call.
     <pre>
-        TextFill("div#complex_div1, div#complex_div2, div#complex_div3, div#complex_div4");
+        TextFill("div#complex-div1, div#complex-div2, div#complex-div3, div#complex-div4");
     </pre>
     <div class="complex" style="height: 250px; width: 800px;">
         <div style="height: 200px; width: 250px;">
-            <div id="complex_div1" style="
+            <div id="complex-div1" style="
                 background-color: blue;
                 width: 200px;
                 height: 120px;
             ">
                 <span class="test-span">Text</span>
             </div>
-            <div id="complex_div2" style="
+            <div id="complex-div2" style="
                 background-color: red;
                 width: 50px;
                 height: 45px;
@@ -319,7 +405,7 @@ Available on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>, or 
             ">
                 <span class="test-span">Fill</span>
             </div>
-            <div id="complex_div3" style="
+            <div id="complex-div3" style="
                 background-color: green;
                 width: 50px;
                 height: 75px;
@@ -328,7 +414,7 @@ Available on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>, or 
                 <span class="test-span">is</span>
             </div>
         </div>
-        <div id="complex_div4" style="
+        <div id="complex-div4" style="
             background-color: yellow;
             width: 550px;
             height: 120px;
@@ -342,7 +428,7 @@ Available on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>, or 
     </div>
 
     <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
+    <div id="footer-wrap" class="outer">
       <footer class="inner">
         <p class="copyright">textfill.js maintained by <a href="https://github.com/Jetroid">Jetroid</a></p>
       </footer>

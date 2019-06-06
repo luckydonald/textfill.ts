@@ -6,15 +6,20 @@ body {
   width: 400px;
 }
 
-.monkeythink {
+#monkeymaxsize {
+  width: 27px;
+}
+
+#monkeythink {
   position: relative;
   float: left;
   width: 200px;
   height: 286px;
   background-image: url("../img/ChimpThinking.png");
+  margin-left: 100px;
 }
 
-.monkeythink .jtextfill {
+#monkey {
   position: absolute;
   top: 30px;
   left: 20px;
@@ -24,34 +29,37 @@ body {
   text-align: center;
 }
 
-.monkeythink .jtextfill span {
+#monkey span {
   font-family: "Happy Monkey";
 }
 
-.computer {
+#computer {
+  background-size: cover;
   position: relative;
   float: right;
-  width: 450px;
-  height: 424px;
+  width: 319.5px;
+  height: 301.04px;
   background-image: url("../img/Computer2.png");
+  margin-right: 40.25px;
 }
 
-.computer .jtextfill {
+#terminal {
   position: absolute;
-  top: 70px;
-  left: 85px;
-  width: 285px;
-  height: 210px;
+  top: 49.7px;
+  left: 60.35px;
+  width: 202.35px;
+  height: 149.1px;
   color: #8f8;
 }
 
-.computer .jtextfill span {
+#terminal span {
   font-family: "VT323";
 }
 
-.computerglare {
+#computerglare {
+  background-size: cover;
   position: absolute;
-  width: 450px;
-  height: 424px;
+  width: 319.5px;
+  height: 301.04px;
   background-image: url("../img/ComputerGlare.png");
 }

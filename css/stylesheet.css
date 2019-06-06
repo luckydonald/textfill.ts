@@ -23,7 +23,7 @@ time, mark, audio, video {
   margin: 0;
   padding: 0;
   border: 0;
-  font: inherit;
+  /*font: inherit; this is stupid. Breaks i, b, etc.*/
   vertical-align: baseline;
 }
 
@@ -66,6 +66,8 @@ h1, h2, h3, h4, h5, h6 {
 h1 {
   font-size: 36px;
   font-weight: 700;
+  padding-bottom: 10px;
+  background: url('../img/bg_hr.png') repeat-x bottom;
 }
 
 h2 {
@@ -280,7 +282,7 @@ div.complex div {
   color: white;
 }
 
-section#main_content {
+section#main-content {
   margin-bottom: 100px;
 }
 
@@ -297,9 +299,10 @@ section#main_content {
 
 pre {
   margin: 10px 0px 15px 0px;
+  box-sizing: border-box;
 }
 
-#forkme_banner {
+#forkme-banner {
   display: block;
   position: absolute;
   top:0;
@@ -314,7 +317,7 @@ pre {
   border-bottom-right-radius: 2px;
 }
 
-#header_wrap {
+#header-wrap {
   background: #212121;
   background: -moz-linear-gradient(top, #373737, #212121);
   background: -webkit-linear-gradient(top, #373737, #212121);
@@ -323,11 +326,11 @@ pre {
   background: linear-gradient(top, #373737, #212121);
 }
 
-#header_wrap .inner {
+#header-wrap .inner {
   padding: 50px 10px 30px 10px;
 }
 
-#project_title {
+#project-title {
   margin: 0;
   color: #fff;
   font-size: 42px;
@@ -335,7 +338,7 @@ pre {
   text-shadow: #111 0px 0px 10px;
 }
 
-#project_tagline {
+#project-tagline {
   color: #fff;
   font-size: 24px;
   font-weight: 300;
@@ -353,7 +356,7 @@ pre {
   background: url('../img/icon_download.png') no-repeat 0% 90%;
 }
 
-.zip_download_link {
+.zip-download-link {
   display: block;
   float: right;
   width: 90px;
@@ -363,7 +366,7 @@ pre {
   background: url(../img/sprite_download.png) no-repeat bottom left;
 }
 
-.tar_download_link {
+.tar-download-link {
   display: block;
   float: right;
   width: 90px;
@@ -374,25 +377,25 @@ pre {
   margin-left: 10px;
 }
 
-.zip_download_link:hover {
+.zip-download-link:hover {
   background: url(../img/sprite_download.png) no-repeat top left;
 }
 
-.tar_download_link:hover {
+.tar-download-link:hover {
   background: url(../img/sprite_download.png) no-repeat top right;
 }
 
-#main_content_wrap {
+#main-content-wrap {
   background: #f2f2f2;
   border-top: 1px solid #111;
   border-bottom: 1px solid #111;
 }
 
-#main_content {
+#main-content {
   padding-top: 40px;
 }
 
-#footer_wrap {
+#footer-wrap {
   background: #212121;
 }
 
@@ -416,7 +419,7 @@ Small Device Styles
     max-width: 480px;
   }
 
-  #project_title {
+  #project-title {
   font-size: 32px;
   }
 
