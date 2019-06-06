@@ -46,17 +46,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 (function() {
 	var TextFill = function(selector, options){
 
-		// Set up some css style classes so we can easily toggle them on and off without
-		//replacing any inline styles
-		if(document.getElementById("textfill-styles") === null) {
-			var style = document.createElement('style');
-			style.id = "textfill-styles";
-			style.type = 'text/css';
-			style.innerHTML = '.textfill-inline { display: inline !important; }';
-			document.getElementsByTagName('head')[0].appendChild(style);
-		}
-
-
 		//  _____  _______ _______ _____  _____  __   _ _______
 		// |     | |_____|    |      |   |     | | \  | |______
 		// |_____| |          |    __|__ |_____| |  \_| ______|
@@ -190,6 +179,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 			ourText.style.letterSpacing = calculatedLetterSpacing;
 			ourText.style.lineHeight = calculatedLineHeight;
 
+			// Need the text element to be inline or it ignores the parent width
+			// we reset this later.
+			ourText.style.display = "inline";
 			
 			while (minFontPixels < (Math.floor(maxFontPixels) - 1)) {
 
@@ -270,7 +262,20 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 			deleteCLHOdiv(parent);
 
 			// ourText contains the child element we will resize.
-			var ourText = parent.querySelector(options.innerTag);
+			var ourText = parent.querySelector(options.innerTag) || parent.firstElementChild;
+
+			// Want to make sure our text is visible
+			if (ourTextComputedStyle === 'none') {
+	            if (options.fail)
+					options.fail(parent);
+
+				_debug(
+					'[TextFill] Failure: Element has no children.'
+				);
+
+				continue;
+	        }
+
 			var ourTextComputedStyle = window.getComputedStyle(ourText);
 
 			_debug('[TextFill] Inner text: ' + ourText.textContent);
@@ -307,6 +312,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 			var oldFontSizeStyle      = ourText.style.fontSize;
 			var oldLineHeightStyle    = ourText.style.lineHeight;
 			var oldLetterSpacingStyle = ourText.style.letterSpacing;
+			var oldDisplayStyle       = ourText.style.display;
 
 			// Line height ratio is essentially the em value
 			var lineHeightRatio    = parseFloat(oldLineHeight) / parseFloat(oldFontSize);
@@ -364,8 +370,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 				fontSizeFinal = Math.min(fontSizeHeight, fontSizeWidth);
 			}
 
+			// Set the font size to the value we found
 			ourText.style.fontSize = fontSizeFinal + "px";
-			ourText.classList.remove("textfill-inline");
+
+			// Remove display - we temporarily set it to inline earlier.
+			ourText.style.display  = oldDisplayStyle;
 
 			// line-height of 2 or above causes the text to leave the container
 			// due to offset at the top.
