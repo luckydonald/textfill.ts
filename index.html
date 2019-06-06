@@ -9,25 +9,6 @@
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" media="screen" href="css/stylesheet.css">
     <script type="text/javascript" src="js/textfill.min.js"></script>
-    <style>
-      div.test-div {
-        background: #ADF;
-        margin-left: auto;
-        margin-right: auto;
-        margin-top: 20px;
-      }
-
-      div#complex div {
-        position: relative;
-        float: left;
-        margin: 0;
-        padding: 0;
-        color: white;
-      }
-      section#main_content {
-        margin-bottom: 100px;
-      }
-    </style>
     <script type="text/javascript">
 window.onload = function() {
     TextFill("div#div1");
@@ -42,16 +23,14 @@ window.onload = function() {
         maxFontPixels: 50
     });
 
-    TextFill("div#div5",{
-        innerTag: "p",
-    });
+    TextFill("div#div5");
 
-    TextFill("div#div6",{
-        rotateText: 90
-    });
+    TextFill("div#div6a");
+    TextFill("div#div6b");
+    TextFill("div#div6c");
 
     TextFill("div#div7",{
-        rotateText: -90
+        innerTag: "p",
     });
 
     var example8= function() { //need to wait font-awesome to load properly before calling the plugin
@@ -64,11 +43,13 @@ window.onload = function() {
     setTimeout(example8, 5000);
 
     TextFill("div#div9",{
-        maximumFontSize: 25
+      allowOverflow: true,
+      minFontPixels: 15,
     });
 
     TextFill("div#div10",{
-      limitingDimension: "width"
+      widthOnly: true,
+      allowOverflow: true
     });
 
     TextFill("div#div11",{
@@ -81,11 +62,7 @@ window.onload = function() {
 
     TextFill("div#div13");
 
-    TextFill("div#complex_div1, div#complex_div2, div#complex_div3");
-    TextFill("div#complex_div4",{
-      rotateText: -45,
-      fontSizeFactor: 1
-    });
+    TextFill("div#complex_div1, div#complex_div2, div#complex_div3, div#complex_div4");
 }
 </script>
   </head>
@@ -112,8 +89,8 @@ window.onload = function() {
       <section id="main_content" class="inner">
 Available on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>, or standalone at . Full documentation available on <a href="https://github.com/Jetroid/textfill.js">GitHub</a>
 
-    <h2>Example1</h2>
-    Simple example with a few of the alternatives for calling TextFill on an element. Makes the text in the span as big as possible without overflowing the parent div.<br />
+    <h2>Example 1</h2>
+    Simple example with a few of the alternatives for calling TextFill on an element. Makes the text in the span as big as possible without overflowing the parent div.<br /><br />
     HTML:
     <pre>
         &lt;div id="div1" style="width: 300px; height: 200px"&gt;
@@ -133,6 +110,7 @@ Available on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>, or 
     <div  id="div1" class="test-div" style="
         width: 300px;
         height: 200px;
+        line-height: 1;
     ">
         <span class="test-span">Testing TextFill</span>
     </div>
@@ -140,12 +118,9 @@ Available on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>, or 
 
 
 
-    <h2>Example2</h2>
-    Same as Example1 but with a different size div. Notice that textfill.js checks both heights and widths to prevent overflowing, and allows for text wrapping. <br />
+    <h2>Example 2</h2>
+    Same as Example1 but with a different size div. Notice that textfill.js checks both heights and widths to prevent overflowing, and allows for text wrapping. <br /><br />
     div size: width: 800px; height: 100px;  
-    <pre>
-        TextFill("div#div2");
-    </pre>
     <div id="div2" class="test-div" style="
         width: 800px;
         height: 100px;
@@ -157,8 +132,7 @@ Available on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>, or 
 
 
 
-    <h2>Example3</h2>
-    div size: width: 800px; height: 100px; <br />
+    <h2>Example 3</h2>
     Same as Example2 but with maxFontPixels set to 50px. Regardless of what the maximum font size could be, TextFill will respect that option and never exceed 50px font-size. 
     <pre>
         TextFill("div#div3",{
@@ -173,7 +147,7 @@ Available on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>, or 
     </div>
 
 
-  <h2>Example4</h2>
+  <h2>Example 4</h2>
     div size: width: 200px; height: 50px; <br />
     Same as Example3 but with a smaller text box. Although maxFontPixels was set to 50px, TextFill reduced the font-size below 50px so that the text did not overflow the container.
     <pre>
@@ -189,14 +163,16 @@ Available on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>, or 
     </div>
 
 
-  <h2>Example5</h2>
-    We can change the inner tag to any inline tag of our choice - we don't just have to use a span.<br />
+  <h2>Example 5</h2>
+    Textfill respects manual line breaks, but also inserts new ones as necessary.<br /><br />
     HTML:
     <pre>
-        &lt;div id="div5" style="width: 200px; height: 200px"&gt;
-          &lt;p&gt;
-            Testing TextFill
-          &lt;/p&gt;
+        &lt;div id="div5" style="width: 800px; height: 200px"&gt;
+          &lt;span&gt;
+            Testing TextFill by writing a big sentence that will wrap.
+            &lt;br /&gt
+            This text will always be on it's own line.
+          &lt;/span&gt;
         &lt;/div&gt;
     </pre>
     Javascript:
@@ -204,51 +180,65 @@ Available on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>, or 
         TextFill("#div5", {innerTag: "p"});
     </pre>
     <div  id="div5" class="test-div" style="
+        width: 800px;
+        height: 200px;
+    ">
+        <span class="test-span">Testing TextFill by writing a big sentence that will wrap.<br />
+            This text will always be on it's own line.</span>
+    </div>
+
+    <h2>Example 6</h2>
+    TextFill reponds to font-relative `line-height` and `letter-spacing`.<br /><br />
+    In this example, `line-height` is set to 4 and manual line breaks have been inserted between the two words.
+    <div id="div6a" class="test-div" style="
+        width: 800px;
+        height: 100px;
+    ">
+        <span class="test-span" style="line-height: 4;">Testing<br/>TextFill</span>
+    </div>
+    In this example, `letter-spacing` is set to `4em`.
+    <div id="div6b" class="test-div" style="
+        width: 800px;
+        height: 75px;
+    ">
+        <span class="test-span" style="letter-spacing: 4em">Testing TextFill</span>
+    </div>
+    In this example, `line-height` is set to 4, whilst `letter-spacing` is set to `4em`.
+    <div id="div6c" class="test-div" style="
+        width: 800px;
+        height: 75px;
+    ">
+        <span class="test-span" style="line-height: 4; letter-spacing: 4em">Testing TextFill</span>
+    </div>
+
+
+    <h2>Example 7</h2>
+    We can change the inner tag to any inline tag of our choice using the _innerTag_ option. We aren't restricted to just using a span.<br />
+    HTML:
+    <pre>
+        &lt;div id="div7" style="width: 200px; height: 200px"&gt;
+          &lt;p&gt;
+            Testing TextFill
+          &lt;/p&gt;
+        &lt;/div&gt;
+    </pre>
+    Javascript:
+    <pre>
+        TextFill("#div7", {innerTag: "p"});
+    </pre>
+    <div  id="div7" class="test-div" style="
         width: 200px;
         height: 200px;
     ">
         <p class="test-span">Testing TextFill</p>
     </div>
 
-    <h2>Example6</h2>
-    div size: width: 300px; height: 10px; <br />
-    TextFill on rotated text? yes please! <br />
-    Note: TextFill, unlike padding, does not support setting the rotation of the text element on CSS. You must set through the $.TextFill() options.
-    <pre>
-        TextFill("div#div6",{
-            rotateText: 90
-        });
-    </pre>
-    <div id="div6" class="test-div" style="
-        width: 100px;
-        height: 300px;
-    ">
-        <span class="test-span">Testing TextFill</span>
-    </div>
 
-
-    <h2>Example7</h2>
-    div size: width: 100px; height: 300px; <br />
-    More rotated examples.
-    <pre>
-        TextFill("div#div7",{
-            rotateText: -90
-        });
-    </pre>
-    <div id="div7" class="test-div" style="
-        width: 100px;
-        height: 300px;
-    ">
-        <span class="test-span">Testing TextFill</span>
-    </div>
-
-
-    <h2>Example8</h2>
-    div size: width: 300px; height: 150px; <br />
-    The element you call TextFill().TextFill() in can have other elements inside it. If you set the font-size in the em unit in these elements you can have bigger text followed by smaller text like below. Using this technique you can also have any kind of text, like <a href='http://fortawesome.github.io/Font-Awesome/'>font-awesome</a> icons.<br />
+    <h2>Example 8</h2>
+    The child element of the tag you call TextFill() on can have other elements inside it. If you set the font-size in the em unit in these elements you can have bigger text followed by smaller text like below. Using this technique you can also have any kind of text, like <a href='http://fortawesome.github.io/Font-Awesome/'>font-awesome</a> icons.<br />
   HTML:
   <pre>
-    &lt;div id="div8"&gt;
+    &lt;div id="div8" style="width: 350px; height: 100px"&gt;
       &lt;span&gt;
         &lt;i class="fa fa-home" style="font-size: 1.3em"&gt;&lt;/i&gt;
         &lt;span style="font-size: 1.2em"&gt;Big&lt;/span&gt;
@@ -262,8 +252,8 @@ Available on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>, or 
         TextFill("div#div8");
     </pre>
     <div id="div8" class="test-div" style="
-        width: 300px;
-        height: 150px;
+        width: 350px;
+        height: 100px;
     ">
     <span class="test-span">
       <i class="fa fa-home" style="font-size: 1.3em"></i>
@@ -274,125 +264,77 @@ Available on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>, or 
     </div>
 
 
-    <h2>Example9</h2>
-    div size: width: 600px; height: 300px; <br />
-    Maximum font size option
+    <h2>Example 9</h2>
+    Minimum font size option with allowOverflow. When the size would be 
     <pre>
     TextFill("div#div9",{
-      maximumFontSize: 25,
+      allowOverflow: true,
+      minFontPixels: 15,
     });
     </pre>
-    <div class="test-div" style="
+    <div id="div9" class="test-div" style="
         width: 600px;
-        height: 300px;
+        height: 100px;
     ">
-        <span id="div9" class="test-span">Testing TextFill</span>
+        <span  class="test-span">Testing TextFill. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam ullamcorper mattis semper. Sed placerat ac mi a cursus. Nulla vulputate felis nec nisi eleifend, ac gravida arcu vulputate. Morbi iaculis justo nec eros accumsan, vel mattis metus tincidunt. Morbi tincidunt sed nisl quis efficitur. Donec euismod sem at consequat sagittis. Nulla magna ipsum, pellentesque eget odio at, pulvinar suscipit nisl. In hac habitasse platea dictumst. Proin semper erat vitae orci aliquet sollicitudin. Duis facilisis venenatis iaculis. In at malesuada felis. Sed ornare eu dui id dignissim. Nullam sed nisi vitae ex dictum molestie non ut libero. Nam ut vulputate felis.</span>
     </div>
+    <br />
+    <br />
+    Note: Text overflow above is intentional.
 
 
     <h2>Example10</h2>
-    div size: width: 600px; height: auto; <br />
-    Limits the font size based only on the parent element width instead of both width and height.
+    Resize text, preventing wrapping, with the `widthOnly` option.
     <pre>
-    TextFill("div#div9",{
-      limitingDimension: "width",
+    TextFill("div#div10",{
+      widthOnly: true;
     });
     </pre>
-    <div class="test-div" style="
+    <div id="div10" class="test-div" style="
         width: 600px;
-        height: auto;
+        height: 60px;
     ">
-        <span id="div10" class="test-span">Testing TextFill</span>
+        <span  class="test-span">Testing TextFill. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam ullamcorper mattis semper.</span>
     </div>
-
-
-    <h2>Example11</h2>
-    div size: width: auto; height: 100px; <br />
-    Limits the font size based only on the parent element height instead of both width and height.
-    <pre>
-    TextFill("div#div9",{
-      limitingDimension: "height",
-    });
-    </pre>
-    <div class="test-div" style="
-        width: auto;
-        height: 100px;
-    ">
-        <span id="div11" class="test-span">Testing TextFill</span>
-    </div>
-
-
-    <h2>Example12</h2>
-    div size: width: 200px; height: 100px; <br />
-    TextFill also works with line breaks added manually. The default is to center the text on each line, but that can be changed using the textAlign property
-    <pre>
-    TextFill("div#div12",{
-      textAlign: "right"
-    });
-    </pre>
-    <div class="test-div" style="
-        width: 200px;
-        height: 100px;
-    ">
-    <span id="div12" class="test-span">Testing<br />Text<br />Fill</span>
-    </div>
-
-
-    <h2>Example13</h2>
-    div size: width: 200px; height: 80px; padding: 30px <br />
-    TextFill understands padding on the enclosing div, so your text can have some breathing room without the need of multiple divs. In this example the enclosing div has a 30px padding added to it.
-    <pre>
-    TextFill("div#div13");
-    </pre>
-    <div class="test-div" style="
-        width: 200px;
-        height: 80px;
-        padding: 30px;
-    ">
-    <span id="div13" class="test-span">Testing TextFill</span>
-    </div>
-
-
 
     <h2>Final Example</h2>
     A more complex arrangement
     <pre>
-        TextFill("div#complex_div1, div#complex_div2, div#complex_div3");
-        TextFill("div#complex_div4",{
-            rotateText: -45,
-            fontSizeFactor: 1
-        });
+        TextFill("div#complex_div1, div#complex_div2, div#complex_div3, div#complex_div4");
     </pre>
-    <div id="complex" style="height: 450px; width: 300px;">
-        <div style="
-            background-color: blue;
-            width: 200px;
-            height: 200px;
-        ">
-            <span id="complex_div1" class="test-span">Text</span>
+    <div class="complex" style="height: 250px; width: 800px;">
+        <div style="height: 200px; width: 250px;">
+            <div id="complex_div1" style="
+                background-color: blue;
+                width: 200px;
+                height: 120px;
+            ">
+                <span class="test-span">Text</span>
+            </div>
+            <div id="complex_div2" style="
+                background-color: red;
+                width: 50px;
+                height: 45px;
+                clear: right;
+            ">
+                <span class="test-span">Fill</span>
+            </div>
+            <div id="complex_div3" style="
+                background-color: green;
+                width: 50px;
+                height: 75px;
+                clear: right;
+            ">
+                <span class="test-span">is</span>
+            </div>
         </div>
-        <div style="
-            background-color: red;
-            width: 100px;
-            height: 100px;
-            clear: right;
-        ">
-            <span id="complex_div2" class="test-span">Fill</span>
-        </div>
-        <div style="
-            background-color: green;
-            width: 100px;
-            height: 100px;
-            clear: right;
-        ">
-            <span id="complex_div3" class="test-span">is</span>
-        </div>
-        <div style="
+        <div id="complex_div4" style="
             background-color: yellow;
-            width: 300px;
-            height: 300px;
+            width: 550px;
+            height: 120px;
+            clear:right;
         ">
-            <span id="complex_div4" class="test-span">AWESOME</span>
+            <span class="test-span">AWESOME</span>
         </div>
     </div>
 
