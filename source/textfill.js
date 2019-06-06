@@ -73,6 +73,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 			explicitWidth    : null,
 			explicitHeight   : null,
 			changeLineHeight : false,
+			correctLineHeightOffset : true,
 			truncateOnFail   : false,
 			allowOverflow    : false // If true, text will stay at minFontPixels but overflow container w/out failing 
 		};
@@ -157,7 +158,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 		 *
 		 * @return Size (in pixels) that the font can be resized.
 		 */
-		function _sizing(prefix, ourText, measurement, max, maxHeight, maxWidth, minFontPixels, maxFontPixels, oldFontSize, lineHeight, letterSpacing) {
+		function _sizing(prefix, ourText, measurement, max, maxHeight, maxWidth, minFontPixels, maxFontPixels, oldFontSize, calculatedLineHeight, calculatedLetterSpacing) {
 
 			_debug_sizing(
 				prefix, ourText,
@@ -185,14 +186,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 			//
 			//     http://stackoverflow.com/a/17433451/1094964
 			//
+
+			ourText.style.letterSpacing = calculatedLetterSpacing;
+			ourText.style.lineHeight = calculatedLineHeight;
+
 			
 			while (minFontPixels < (Math.floor(maxFontPixels) - 1)) {
 
 				var fontSize = Math.floor((minFontPixels + maxFontPixels) / 2);
 				ourText.style.fontSize = fontSize + "px";
-				ourText.style.letterSpacing = letterSpacing;
-				ourText.style.lineHeight = lineHeight;
-				ourText.classList.add("textfill-inline");
 
 				var curSize = ourText[measurement];
 
@@ -216,8 +218,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 			}
 
 			ourText.style.fontSize = maxFontPixels + "px";
-			ourText.style.letterSpacing = letterSpacing;
-			ourText.style.lineHeight = lineHeight;
 
 			if (ourText[measurement] <= max) {
 				minFontPixels = maxFontPixels;
@@ -230,6 +230,20 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 				);
 			}
 			return minFontPixels;
+		}
+
+		function deleteCLHOdiv(parent) {
+			// If we've previously called TextFill on parent with
+			// correctLineHeightOffset turned on, there will be a div between
+			// the innerTag we want and the parent.
+			// So first, let's delete that div if we find it.
+			var unwantedDiv = parent.getElementsByClassName("textfill-clho")[0];
+			if (unwantedDiv != null) {
+				while (unwantedDiv.firstChild) {
+				    parent.insertBefore(unwantedDiv.firstChild, unwantedDiv);
+				}
+				parent.removeChild(unwantedDiv);
+			}
 		}
 
 		// _______ _______ _______  ______ _______
@@ -252,6 +266,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 		for (var i = 0; i < elements.length; i++) {
 			var parent = elements[i];
+
+			deleteCLHOdiv(parent);
 
 			// ourText contains the child element we will resize.
 			var ourText = parent.querySelector(options.innerTag);
@@ -281,12 +297,20 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 			var maxHeight = options.explicitHeight || parent.offsetHeight;
 			var maxWidth  = options.explicitWidth  || parent.offsetWidth;
 
+			// This has the actual computed value - useful for calculations
 			var oldFontSize      = ourTextComputedStyle.getPropertyValue("font-size");
 			var oldLineHeight    = ourTextComputedStyle.getPropertyValue("line-height");
 			var oldLetterSpacing = ourTextComputedStyle.getPropertyValue("letter-spacing");
 
-			var lineHeight    = parseFloat(oldLineHeight) / parseFloat(oldFontSize);
-			var letterSpacing = parseFloat(oldLetterSpacing) / parseFloat(oldFontSize);
+			// This has the inline style value - we use this to 'reset' without
+			// destroying any existing (but overridden) inline styles
+			var oldFontSizeStyle      = ourText.style.fontSize;
+			var oldLineHeightStyle    = ourText.style.lineHeight;
+			var oldLetterSpacingStyle = ourText.style.letterSpacing;
+
+			// Line height ratio is essentially the em value
+			var lineHeightRatio    = parseFloat(oldLineHeight) / parseFloat(oldFontSize);
+			var letterSpacingRatio = parseFloat(oldLetterSpacing) / parseFloat(oldFontSize);
 
 			var minFontPixels = options.minFontPixels;
 
@@ -309,7 +333,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 					maxHeight, maxWidth,
 					minFontPixels, maxFontPixels,
 					oldFontSize,
-					lineHeight, letterSpacing
+					lineHeightRatio, letterSpacingRatio
 				);
 			}
 
@@ -329,7 +353,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 				maxHeight, maxWidth,
 				minFontPixels, maxFontPixels,
 				oldFontSize,
-				lineHeight, letterSpacing
+				lineHeightRatio, letterSpacingRatio
 			);
 
 			// 3. Actually resize the text!
@@ -342,6 +366,26 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 			ourText.style.fontSize = fontSizeFinal + "px";
 			ourText.classList.remove("textfill-inline");
+
+			// line-height of 2 or above causes the text to leave the container
+			// due to offset at the top.
+			// The text is sized to fit the container but 
+			if(options.correctLineHeightOffset 
+				&& !(isNaN(lineHeightRatio) || lineHeightRatio === 1)) {
+
+				var lhCorrectDiv = document.createElement("div");
+				parent.replaceChild(lhCorrectDiv, ourText);
+				lhCorrectDiv.appendChild(ourText);
+
+				lhCorrectDiv.className = "textfill-clho";
+				
+				// We want to offset the div up by half of the total line height (in lines)
+				// (after ignore the actual line of text).
+				lhCorrectDiv.style.top = -(lineHeightRatio - 1)/2 + "em";
+				lhCorrectDiv.style.fontSize = fontSizeFinal + "px";
+				lhCorrectDiv.style.position = "relative";
+			}
+
 			if (options.changeLineHeight) {
 				parent.style.lineHeight = (lineHeight * fontSizeFinal) + 'px';
 			}
@@ -352,9 +396,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 			if ((ourText.offsetWidth  > maxWidth && !options.allowOverflow) ||
 				(ourText.offsetHeight > maxHeight && !options.widthOnly && !options.allowOverflow)) { 
 
-				ourText.style.fontSize = oldFontSize;
-				ourText.style.letterSpacing = letterSpacing;
-				ourText.style.lineHeight = lineHeight;
+				// Restore our old styles because we had a failure.
+				ourText.style.fontSize = oldFontSizeStyle;
+				ourText.style.letterSpacing = oldLetterSpacingStyle;
+				ourText.style.lineHeight = oldLineHeightStyle;
+				deleteCLHOdiv(parent);
 
 
 				// Failure callback
