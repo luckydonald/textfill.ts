@@ -1,5 +1,5 @@
 /*
-Jetroid/textfill.js v1.0.2, 2019
+Jetroid/textfill.js v1.0.3, 2019
 Adapted from jquery-textfill/jquery-textfill, v0.6.2, Feb 2018
 
 Usage:
@@ -62,8 +62,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 			explicitWidth    : null,
 			explicitHeight   : null,
 			changeLineHeight : false,
+			correctLineHeightOffset : true,
 			truncateOnFail   : false,
-			allowOverflow    : false // If true, text will stay at minFontPixels but overflow container w/out failing 
+			allowOverflow    : false // If true, text will stay at minFontPixels but overflow container w/out failing
 		};
 
 		// Merge provided options and default options
@@ -101,7 +102,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 		// Outputs all information on the current sizing
 		// of the font.
 		// For arguments, see _sizing(), below
-		function _debug_sizing(prefix, ourText, maxHeight, maxWidth, minFontPixels, maxFontPixels, fontSize) {
+		function _debug_sizing(prefix, ourText, maxHeight, maxWidth, minFontPixels, maxFontPixels, fontSize, lineHeight, letterSpacing) {
 
 			function _m(v1, v2) {
 
@@ -115,15 +116,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 				}
 				return marker;
 			}
-
-			_debug(
-				'[TextFill] '  + prefix + ' { ' +
-				'font-size: ' + fontSize + ',' +
-				'Height: '    + ourText.offsetHeight + 'px ' + _m(ourText.offsetHeight, maxHeight) + maxHeight + 'px,' +
-				'Width: '     + ourText.offsetWidth  + _m(ourText.offsetWidth , maxWidth)  + maxWidth + ',' +
-				'minFontPixels: ' + minFontPixels + 'px, ' +
-				'maxFontPixels: ' + maxFontPixels + 'px }'
-			);
+			if (options.debug) {
+				_debug(
+					'[TextFill] '  + prefix + ' { ' +
+					'font-size: ' + fontSize + ', ' +
+					'Height: '    + ourText.offsetHeight + 'px ' + _m(ourText.offsetHeight, maxHeight) + maxHeight + 'px, ' +
+					'Width: '     + ourText.offsetWidth  + _m(ourText.offsetWidth , maxWidth)  + maxWidth + ', ' +
+					'minFontPixels: ' + minFontPixels + 'px, ' +
+					'maxFontPixels: ' + maxFontPixels + 'px, }'
+				);
+			}
 		}
 
 		/**
@@ -145,13 +147,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 		 *
 		 * @return Size (in pixels) that the font can be resized.
 		 */
-		function _sizing(prefix, ourText, measurement, max, maxHeight, maxWidth, minFontPixels, maxFontPixels) {
+		function _sizing(prefix, ourText, measurement, max, maxHeight, maxWidth, minFontPixels, maxFontPixels, oldFontSize, calculatedLineHeight, calculatedLetterSpacing) {
 
 			_debug_sizing(
 				prefix, ourText,
 				maxHeight, maxWidth,
 				minFontPixels, maxFontPixels,
-				'font size not yet calculated'
+				oldFontSize
 			);
 
 			// The kernel of the whole plugin, take most attention
@@ -173,11 +175,19 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 			//
 			//     http://stackoverflow.com/a/17433451/1094964
 			//
+
+			ourText.style.letterSpacing = calculatedLetterSpacing;
+			ourText.style.lineHeight = calculatedLineHeight;
+
+			// Need the text element to be inline or it ignores the parent width
+			// we reset this later.
+			ourText.style.display = "inline";
 			
 			while (minFontPixels < (Math.floor(maxFontPixels) - 1)) {
 
 				var fontSize = Math.floor((minFontPixels + maxFontPixels) / 2);
 				ourText.style.fontSize = fontSize + "px";
+
 				var curSize = ourText[measurement];
 
 				if (curSize <= max) {
@@ -194,7 +204,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 				_debug_sizing(
 					prefix, ourText,
 					maxHeight, maxWidth,
-					minFontPixels, maxFontPixels, fontSize
+					minFontPixels, maxFontPixels,
+					fontSize
 				);
 			}
 
@@ -211,6 +222,20 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 				);
 			}
 			return minFontPixels;
+		}
+
+		function deleteCLHOdiv(parent) {
+			// If we've previously called TextFill on parent with
+			// correctLineHeightOffset turned on, there will be a div between
+			// the innerTag we want and the parent.
+			// So first, let's delete that div if we find it.
+			var unwantedDiv = parent.getElementsByClassName("textfill-clho")[0];
+			if (unwantedDiv != null) {
+				while (unwantedDiv.firstChild) {
+				    parent.insertBefore(unwantedDiv.firstChild, unwantedDiv);
+				}
+				parent.removeChild(unwantedDiv);
+			}
 		}
 
 		// _______ _______ _______  ______ _______
@@ -234,8 +259,23 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 		for (var i = 0; i < elements.length; i++) {
 			var parent = elements[i];
 
+			deleteCLHOdiv(parent);
+
 			// ourText contains the child element we will resize.
-			var ourText = parent.querySelector(options.innerTag);
+			var ourText = parent.querySelector(options.innerTag) || parent.firstElementChild;
+
+			// Want to make sure our text is visible
+			if (ourTextComputedStyle === 'none') {
+	            if (options.fail)
+					options.fail(parent);
+
+				_debug(
+					'[TextFill] Failure: Element has no children.'
+				);
+
+				continue;
+	        }
+
 			var ourTextComputedStyle = window.getComputedStyle(ourText);
 
 			_debug('[TextFill] Inner text: ' + ourText.textContent);
@@ -262,10 +302,21 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 			var maxHeight = options.explicitHeight || parent.offsetHeight;
 			var maxWidth  = options.explicitWidth  || parent.offsetWidth;
 
-			var oldFontSize   = ourTextComputedStyle.getPropertyValue("font-size");
-			var oldLineHeight = ourTextComputedStyle.getPropertyValue("line-height");
+			// This has the actual computed value - useful for calculations
+			var oldFontSize      = ourTextComputedStyle.getPropertyValue("font-size");
+			var oldLineHeight    = ourTextComputedStyle.getPropertyValue("line-height");
+			var oldLetterSpacing = ourTextComputedStyle.getPropertyValue("letter-spacing");
 
-			var lineHeight  = parseFloat(oldLineHeight) / parseFloat(oldFontSize);
+			// This has the inline style value - we use this to 'reset' without
+			// destroying any existing (but overridden) inline styles
+			var oldFontSizeStyle      = ourText.style.fontSize;
+			var oldLineHeightStyle    = ourText.style.lineHeight;
+			var oldLetterSpacingStyle = ourText.style.letterSpacing;
+			var oldDisplayStyle       = ourText.style.display;
+
+			// Line height ratio is essentially the em value
+			var lineHeightRatio    = parseFloat(oldLineHeight) / parseFloat(oldFontSize);
+			var letterSpacingRatio = parseFloat(oldLetterSpacing) / parseFloat(oldFontSize);
 
 			var minFontPixels = options.minFontPixels;
 
@@ -286,7 +337,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 					'Height', ourText,
 					'offsetHeight', maxHeight,
 					maxHeight, maxWidth,
-					minFontPixels, maxFontPixels
+					minFontPixels, maxFontPixels,
+					oldFontSize,
+					lineHeightRatio, letterSpacingRatio
 				);
 			}
 
@@ -304,7 +357,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 				'Width', ourText,
 				'offsetWidth', maxWidth,
 				maxHeight, maxWidth,
-				minFontPixels, maxFontPixels
+				minFontPixels, maxFontPixels,
+				oldFontSize,
+				lineHeightRatio, letterSpacingRatio
 			);
 
 			// 3. Actually resize the text!
@@ -315,18 +370,49 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 				fontSizeFinal = Math.min(fontSizeHeight, fontSizeWidth);
 			}
 
+			// Set the font size to the value we found
 			ourText.style.fontSize = fontSizeFinal + "px";
+
+			// Remove display - we temporarily set it to inline earlier.
+			ourText.style.display  = oldDisplayStyle;
+
+			// line-height of 2 or above causes the text to leave the container
+			// due to offset at the top.
+			// The text is sized to fit the container but 
+			if(options.correctLineHeightOffset 
+				&& !(isNaN(lineHeightRatio) || lineHeightRatio === 1)) {
+
+				var lhCorrectDiv = document.createElement("div");
+				parent.replaceChild(lhCorrectDiv, ourText);
+				lhCorrectDiv.appendChild(ourText);
+
+				lhCorrectDiv.className = "textfill-clho";
+				
+				// We want to offset the div up by half of the total line height (in lines)
+				// (after ignore the actual line of text).
+				lhCorrectDiv.style.top = -(lineHeightRatio - 1)/2 + "em";
+				lhCorrectDiv.style.fontSize = fontSizeFinal + "px";
+				lhCorrectDiv.style.position = "relative";
+			}
+
 			if (options.changeLineHeight) {
 				parent.style.lineHeight = (lineHeight * fontSizeFinal) + 'px';
 			}
 
+
 			// Test if something wrong happened
 			// If font-size increasing, we weren't supposed to exceed the original size 
-			// If font-size decreasing, we hit minFontPixels, and still won't fit 
-			if ((ourText.offsetWidth  > maxWidth && !options.allowOverflow) ||
-				(ourText.offsetHeight > maxHeight && !options.widthOnly && !options.allowOverflow)) { 
+			// If font-size decreasing, we hit minFontPixels, and still won't fit
+			// So undo everything we did
+			if (((ourText.offsetWidth > maxWidth && !options.allowOverflow) ||
+				(ourText.offsetHeight > maxHeight && !options.widthOnly && !options.allowOverflow))) { 
 
-				ourText.style.fontSize = oldFontSize;
+				// Restore our old styles because we had a failure.
+				ourText.style.fontSize = oldFontSizeStyle;
+				ourText.style.letterSpacing = oldLetterSpacingStyle;
+				ourText.style.lineHeight = oldLineHeightStyle;
+				deleteCLHOdiv(parent);
+
 
 				// Failure callback
 				if (options.fail) {
