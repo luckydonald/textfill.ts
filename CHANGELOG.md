@@ -14,6 +14,9 @@ Update size when page resizes for responsiveness.
 ## Development
 
 ## Version 1.0.3
+* Fixed block element `innerTag`s from overflowing in strange ways. 
+* Added option to automatically resize the element when the page resizes
+* Added option to automatically correct (remove) an offset that appears when using large line-height that causes the inner tag to offset outside the div. (corrected by inserting a new div between parent and child with a calculated de-offset)
 * Text resizing now respects line-height and letter-spacing settings. (by zhengs)
 
 ## Version 1.0.2

@@ -17,15 +17,17 @@ TextFill(".some-selector",{
 
 Options:
 
-minFontPixels:      Minimal font size (in pixels). The text will shrink up to this value.
-maxFontPixels:      Maximum font size (in pixels). The text will stretch up to this value.. If it's a negative value (size <= 0), the text will stretch to as big as the container can accommodate.
-innerTag:           The child element tag to resize. We select it by using container.querySelector(innerTag)
-widthOnly:          Will only resize to the width restraint. The font might become tiny under small containers.
-explicitWidth:      Explicit width to resize. Defaults to the container's width.
-explicitHeight:     Explicit height to resize. Defaults to the container's height.
-changeLineHeight:   Also change the line-height of the parent container. This might be useful when shrinking to a small container.
-allowOverflow:      Allows text to overflow when minFontPixels is reached. Won't fail resizing, but instead will overflow container.
-debug:              Output debugging messages to console.
+minFontPixels:              Minimal font size (in pixels). The text will shrink up to this value.
+maxFontPixels:              Maximum font size (in pixels). The text will stretch up to this value.. If it's a negative value (size <= 0), the text will stretch to as big as the container can accommodate.
+innerTag:                   The child element tag to resize. We select it by using container.querySelector(innerTag)
+widthOnly:                  Will only resize to the width restraint. The font might become tiny under small containers.
+explicitWidth:              Explicit width to resize. Defaults to the container's width.
+explicitHeight:             Explicit height to resize. Defaults to the container's height.
+changeLineHeight:           Also change the line-height of the parent container. This might be useful when shrinking to a small container.
+allowOverflow:              Allows text to overflow when minFontPixels is reached. Won't fail resizing, but instead will overflow container.
+correctLineHeightOffset:    When set to true, this removes vertical offset that appears when using TextFill with large line heights.
+autoResize:                 When the page resizes, re-run TextFill (with the same options) on the elements resized by the current call.
+debug:                      Output debugging messages to console.
 
 
 Original Project: 
@@ -44,13 +46,14 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 (function() {
-	var TextFill = function(selector, options){
+	var TextFill = function(selector, incomingOptions){
+		incomingOptions = incomingOptions || {};
 
 		//  _____  _______ _______ _____  _____  __   _ _______
 		// |     | |_____|    |      |   |     | | \  | |______
 		// |_____| |          |    __|__ |_____| |  \_| ______|
 
-		var defaultOptions = {
+		var options = {
 			debug            : false,
 			maxFontPixels    : 0,
 			minFontPixels    : 4,
@@ -63,15 +66,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 			explicitHeight   : null,
 			changeLineHeight : false,
 			correctLineHeightOffset : true,
-			truncateOnFail   : false,
-			allowOverflow    : false // If true, text will stay at minFontPixels but overflow container w/out failing
+			allowOverflow    : false, // If true, text will stay at minFontPixels but overflow container w/out failing 
+			autoResize       : false  // If true, text will resize again when the page does
 		};
 
 		// Merge provided options and default options
-		options = options || {};
-		for (var opt in defaultOptions)
-			if (defaultOptions.hasOwnProperty(opt) && !options.hasOwnProperty(opt))
-				options[opt] = defaultOptions[opt];
+		for (var opt in options)
+			if (incomingOptions.hasOwnProperty(opt))
+				options[opt] = incomingOptions[opt];
 
 		// _______ _     _ __   _ _______ _______ _____  _____  __   _ _______
 		// |______ |     | | \  | |          |      |   |     | | \  | |______
@@ -247,30 +249,49 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 		var elements;
 		if (typeof selector === 'string') {
+			_debug('[TextFill] First Parameter was a string; applying querySelectorAll.');
 			elements = document.querySelectorAll(selector);
 		} else if (selector instanceof Element || selector instanceof HTMLDocument) {
+			_debug('[TextFill] First Parameter was a DOM element')
 			// Support for DOM nodes
-			elements = selector;
+			elements = [selector];
 		} else if (selector.length) {
+			_debug('[TextFill] First Parameter had the length property; probably jQuery.');
 			// Support for array based queries (such as jQuery)
 			elements = selector;
 		}
 
 		for (var i = 0; i < elements.length; i++) {
 			var parent = elements[i];
+			_debug("[TextFill] Parent Element: ", parent);
 
+			// If autoresize, we want to store our options as a data attribute on the parent
+			if (options.autoResize) {
+				parent.setAttribute("data-textfill-resize-options",JSON.stringify(incomingOptions || {}));
+			} else {
+				parent.removeAttribute("data-textfill-resize-options");
+			}
+
+			// The Correct Line Height Overflow div causes problems for the ourText selection
+			// It might have been added on a previous run of TextFill
+			// so let's remove it 
 			deleteCLHOdiv(parent);
 
-			// ourText contains the child element we will resize.
-			var ourText = parent.querySelector(options.innerTag) || parent.firstElementChild;
+			// Find a child that matches `innerTag` that is a direct descendent of the parent
+			// Sadly there is no selector for this (:scope not implemented by all browsers)
+			// So we will temporarily set an id, making sure to backup and restore any existing ID
+			var parentId = parent.id;
+			parent.id = "textfill-parent-id";
+			var ourText = parent.querySelector("#textfill-parent-id > " + options.innerTag);
+			parent.id = parentId;
 
 			// Want to make sure our text is visible
-			if (ourTextComputedStyle === 'none') {
+			if (ourText === null) {
 	            if (options.fail)
 					options.fail(parent);
 
-				_debug(
-					'[TextFill] Failure: Element has no children.'
+				_warn(
+					'[TextFill] Failure: Element has no direct children matching the `' + options.innerTag + '` selector.\n', parent
 				);
 
 				continue;
@@ -399,13 +420,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 				parent.style.lineHeight = (lineHeight * fontSizeFinal) + 'px';
 			}
 
-
 			// Test if something wrong happened
 			// If font-size increasing, we weren't supposed to exceed the original size 
-			// If font-size decreasing, we hit minFontPixels, and still won't fit
-			// So undo everything we did
-			if (((ourText.offsetWidth > maxWidth && !options.allowOverflow) ||
-				(ourText.offsetHeight > maxHeight && !options.widthOnly && !options.allowOverflow))) { 
+			// If font-size decreasing, we hit minFontPixels, and still won't fit 
+			if ((ourText.offsetWidth  > maxWidth && !options.allowOverflow) ||
+				(ourText.offsetHeight > maxHeight && !options.widthOnly && !options.allowOverflow)) { 
 
 				// Restore our old styles because we had a failure.
 				ourText.style.fontSize = oldFontSizeStyle;
@@ -448,8 +467,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 		_debug('[TextFill] End Debug');
 
-	}
-
+	};
+	window.addEventListener("resize", function() {
+		var resizeElems = document.querySelectorAll("*[data-textfill-resize-options]");
+		for (var i = 0; i < resizeElems.length; i++) {
+			var parent = resizeElems[i];
+			var options = JSON.parse(parent.getAttribute("data-textfill-resize-options"));
+			TextFill(parent, options);
+		}
+	});
 	if (typeof module !== 'undefined' && typeof module.exports !== 'undefined')
 		module.exports = TextFill;
 	else

@@ -76,14 +76,16 @@ the parent was the `div` and the child was the `span`.
 
 | Name              | Description | Default Value |
 | ----------------- | ----------- | ------------- |
-| `minFontPixels`   | Minimal font size (in pixels). The text will shrink up to this value. | `4` |
+| `minFontPixels`   | Minimal font size (in pixels). The text will shrink down to this value. | `4` |
 | `maxFontPixels`   | Maximum font size (in pixels). The text will stretch up to this value.. If it's a negative value (`size <= 0`), the text will stretch to as big as the container can accommodate. | `0` |
-| `innerTag`        | The child element tag to resize. We select it by using `container.querySelector(innerTag)` | `span` |
-| `widthOnly`       | Will only resize to the width restraint. The font might become tiny under small containers.  | `false` |
+| `innerTag`        | The selector for the direct child element tag to resize. We select it by using the `container > innerTag` selector. | `span` |
+| `widthOnly`       | Will only resize to the width restraint, keeping the text all on one line. The font might become tiny when using a small container.  | `false` |
 | `explicitWidth`   | Explicit width to resize. Defaults to the container's width. | `null` |
 | `explicitHeight`  | Explicit height to resize. Defaults to the container's height. | `null` |
 | `changeLineHeight`| Also change the `line-height` of the parent container. This might be useful when shrinking to a small container. | `false` |
-| `allowOverflow`   | Allows text to overflow when minFontPixels is reached. Won't fail resizing, but instead will overflow container. | `false` |
+| `correctLineHeightOffset` | When set to true, this removes vertical offset that appears when using TextFill with large line heights (and causes the text to overflow the element). This is done by inserting a div between the container and the child. | `true` |
+| `allowOverflow`   | To be used with `minFontPixels`. Allows text to overflow when minFontPixels is reached, rather than failing to resize. Note that the `fail` callback will not be executed with `allowOverflow` set to `true`. | `false` |
+| `autoResize`      | When the page resizes, re-run TextFill (with the same options) on the elements resized by the current call. Note: Does not rerun the selector you use, it only targets elements that were already resized by TextFill. Eg if your selector is `.elements` and that matches 3 elements on the original TextFill call, and a fourth `.elements` is added to the page sometime before the resize, that fourth element will not be TextFilled. | `false` |
 | `debug`           | Output debugging messages to console. | `false` |
 
 For example,
