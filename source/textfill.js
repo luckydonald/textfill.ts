@@ -251,7 +251,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 			elements = document.querySelectorAll(selector);
 		} else if (selector instanceof Element || selector instanceof HTMLDocument) {
 			// Support for DOM nodes
-			elements = selector;
+			elements = [selector];
 		} else if (selector.length) {
 			// Support for array based queries (such as jQuery)
 			elements = selector;
@@ -274,6 +274,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 			// ourText contains the child element we will resize.
 			var ourText = parent.querySelector(options.innerTag) || parent.firstElementChild;
+			var ourTextComputedStyle = window.getComputedStyle(ourText);
 
 			// Want to make sure our text is visible
 			if (ourTextComputedStyle === 'none') {
@@ -287,7 +288,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 				continue;
 	        }
 
-			var ourTextComputedStyle = window.getComputedStyle(ourText);
 
 			_debug('[TextFill] Inner text: ' + ourText.textContent);
 			_debug('[TextFill] All options: ', options);
