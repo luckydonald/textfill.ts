@@ -1,3 +1,4 @@
+window.onload = function() {
 /*global QUnit,$*/
 
 /**
@@ -29,9 +30,6 @@ QUnit.test('capped at 10px', function (assert) {
       height: 210
     },
     span: {
-      css: {
-        'font-family': 'VT323'
-      },
       text: 'test'
     }
   });
@@ -51,9 +49,6 @@ QUnit.test('size up to max', function (assert) {
       height: 210
     },
     span: {
-      css: {
-        'font-family': 'VT323'
-      },
       text: 'test'
     }
   });
@@ -73,9 +68,6 @@ QUnit.test('width be maxWidth', function (assert) {
       height: 210
     },
     span: {
-      css: {
-        'font-family': 'VT323'
-      },
       text: 'test'
     }
   });
@@ -95,9 +87,6 @@ QUnit.test('height be maxHeight', function (assert) {
       height: 158
     },
     span: {
-      css: {
-        'font-family': 'VT323'
-      },
       text: 'test'
     }
   });
@@ -203,9 +192,6 @@ QUnit.test('allowOverflow will not result in fail callback', 1, function (assert
       height: 60
     },
     span: {
-      css: {
-        'font-family': 'VT323'
-      },
       text: 'This text will cause overflow to occur, but will not result in a fail callback.'
     }
   });
@@ -234,9 +220,6 @@ QUnit.test('success callback', 1, function(assert) {
       height: 210
     },
     span: {
-      css: {
-        'font-family': 'VT323'
-      },
       text: 'test'
     }
   });
@@ -290,9 +273,6 @@ QUnit.test('complete callback', 1, function(assert) {
       height: 210
     },
     span: {
-      css: {
-        'font-family': 'VT323'
-      },
       text: 'test'
     }
   });
@@ -342,9 +322,6 @@ QUnit.test('debug used', function (assert) {
       height: 210
     },
     span: {
-      css: {
-        'font-family': 'VT323'
-      },
       text: 'test'
     }
   });
@@ -363,9 +340,6 @@ QUnit.test('debug not used', function (assert) {
       height: 210
     },
     span: {
-      css: {
-        'font-family': 'VT323'
-      },
       text: 'test'
     }
   });
@@ -374,3 +348,4 @@ QUnit.test('debug not used', function (assert) {
   TextFill('#'+JTF,{debug: false, maxFontPixels: 10});
   assert.equal(console.debug_called, false);
 });
+};
