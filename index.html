@@ -75,9 +75,19 @@ window.onload = function() {
     });
 
     TextFill("div#div10b",{
+      allowOverflow: false,
+      minFontPixels: 13,
+      fail: function(element) {
+        element.style.background = "red";
+      }
+    });
+
+    TextFill("div#div10c",{
       allowOverflow: true,
       minFontPixels: 13,
     });
+
+    TextFill("#div11", {autoResize: true, debug: true});
 
     TextFill("div#complex-div1, div#complex-div2, div#complex-div3, div#complex-div4");
 }
@@ -364,14 +374,36 @@ Available on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>, or 
     <br/>
     <i>The above text remained at the same font size it had before TextFill was applied.</i><br/>
     <br/>
+    We can set a callback to execute on a failure.
+     <pre>
+    //This fails, but calls the callback
+    TextFill("div#div10b",{
+      allowOverflow: false,
+      minFontPixels: 13,
+      fail: function(element) {
+        element.style.background = "red";
+      }
+    });
+    </pre>
+    <div id="div10b" class="test-div" style="
+        width: 600px;
+        height: 100px;
+    ">
+        <span  class="test-span">Testing TextFill. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam ullamcorper mattis semper. Sed placerat ac mi a cursus. Nulla vulputate felis nec nisi eleifend, ac gravida arcu vulputate. Morbi iaculis justo nec eros accumsan, vel mattis metus tincidunt. Morbi tincidunt sed nisl quis efficitur. Donec euismod sem at consequat sagittis. Nulla magna ipsum, pellentesque eget odio at, pulvinar suscipit nisl. In hac habitasse platea dictumst. Proin semper erat vitae orci aliquet sollicitudin. Duis facilisis venenatis iaculis. In at malesuada felis. Sed ornare eu dui id dignissim. Nullam sed nisi vitae ex dictum molestie non ut libero. Nam ut vulputate felis.</span>
+    </div>
+    <br/>
+    <br/>
+    <br/>
+    <i>The above text remained at the same font size it had before TextFill was applied, but a callback was executed (which make the background red).</i><br/>
+    <br/>
     With <i>allowOverflow</i> set to <i>true</i>, the text will be resized down to the minimum pixels (if not bigger when the container is big enough), and any excess text is allowed to overflow the container.
     <pre>
-    TextFill("div#div10b",{
+    TextFill("div#div10c",{
       allowOverflow: true,
       minFontPixels: 13,
     });
     </pre>
-    <div id="div10b" class="test-div" style="
+    <div id="div10c" class="test-div" style="
         width: 600px;
         height: 100px;
     ">
@@ -381,7 +413,26 @@ Available on NPM at <a href="">https://www.npmjs.com/package/textfilljs</a>, or 
     <i>Note: Text overflow above is intentional.</i>
 
 
-    
+    <h2>Example 11</h2>
+    We can set TextFill to automatically rerun when the page resizes. Resize your browser window (or rotate your mobile device) to see it in action.<br /><br />
+    HTML:
+    <pre>
+        &lt;div id="div11" style="max-width: 50vw; max-height: 10vh"&gt;
+          &lt;p&gt;
+            Testing TextFill
+          &lt;/p&gt;
+        &lt;/div&gt;
+    </pre>
+    Javascript:
+    <pre>
+        TextFill("#div11", {autoResize: true});
+    </pre>
+    <div id="div11" class="test-div" style="
+        width: 50vw;
+        height: 10vh;
+    ">
+        <span class="test-span">Testing TextFill</span>
+    </div>
 
     <h2>Final Example</h2>
     A more complex arrangement. We can run the function on all four divs in the same TextFill call.
