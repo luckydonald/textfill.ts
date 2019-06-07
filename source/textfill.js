@@ -44,13 +44,14 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 (function() {
-	var TextFill = function(selector, options){
+	var TextFill = function(selector, incomingOptions){
+		incomingOptions = incomingOptions || {};
 
 		//  _____  _______ _______ _____  _____  __   _ _______
 		// |     | |_____|    |      |   |     | | \  | |______
 		// |_____| |          |    __|__ |_____| |  \_| ______|
 
-		var defaultOptions = {
+		var options = {
 			debug            : false,
 			maxFontPixels    : 0,
 			minFontPixels    : 4,
@@ -64,14 +65,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 			changeLineHeight : false,
 			correctLineHeightOffset : true,
 			truncateOnFail   : false,
-			allowOverflow    : false // If true, text will stay at minFontPixels but overflow container w/out failing 
+			allowOverflow    : false, // If true, text will stay at minFontPixels but overflow container w/out failing 
+			autoResize       : false  // If true, text will resize again when the page does
 		};
 
 		// Merge provided options and default options
-		options = options || {};
-		for (var opt in defaultOptions)
-			if (defaultOptions.hasOwnProperty(opt) && !options.hasOwnProperty(opt))
-				options[opt] = defaultOptions[opt];
+		for (var opt in options)
+			if (incomingOptions.hasOwnProperty(opt))
+				options[opt] = incomingOptions[opt];
 
 		// _______ _     _ __   _ _______ _______ _____  _____  __   _ _______
 		// |______ |     | | \  | |          |      |   |     | | \  | |______
@@ -259,6 +260,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 		for (var i = 0; i < elements.length; i++) {
 			var parent = elements[i];
 
+			// If autoresize, we want to store our options as a data attribute on the parent
+			if (options.autoResize) {
+				parent.setAttribute("data-textfill-resize-options",JSON.stringify(incomingOptions || {}));
+			} else {
+				parent.removeAttribute("data-textfill-resize-options");
+			}
+
+			// The Correct Line Height Overflow div causes problems for the ourText selection
+			// It might have been added on a previous run of TextFill
+			// so let's remove it 
 			deleteCLHOdiv(parent);
 
 			// ourText contains the child element we will resize.
@@ -446,8 +457,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 		_debug('[TextFill] End Debug');
 
-	}
-
+	};
+	window.addEventListener("resize", function() {
+		var resizeElems = document.querySelectorAll("*[data-textfill-resize-options]");
+		for (var i = 0; i < resizeElems.length; i++) {
+			var parent = resizeElems[i];
+			var options = JSON.parse(parent.getAttribute("data-textfill-resize-options"));
+			TextFill(parent, options);
+		}
+	});
 	if (typeof module !== 'undefined' && typeof module.exports !== 'undefined')
 		module.exports = TextFill;
 	else
