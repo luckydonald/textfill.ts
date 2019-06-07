@@ -248,17 +248,21 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 		var elements;
 		if (typeof selector === 'string') {
+			_debug('[TextFill] First Parameter was a string; applying querySelectorAll.');
 			elements = document.querySelectorAll(selector);
 		} else if (selector instanceof Element || selector instanceof HTMLDocument) {
+			_debug('[TextFill] First Parameter was a DOM element')
 			// Support for DOM nodes
 			elements = [selector];
 		} else if (selector.length) {
+			_debug('[TextFill] First Parameter had the length property; probably jQuery.');
 			// Support for array based queries (such as jQuery)
 			elements = selector;
 		}
 
 		for (var i = 0; i < elements.length; i++) {
 			var parent = elements[i];
+			_debug("[TextFill] Parent Element: ", parent);
 
 			// If autoresize, we want to store our options as a data attribute on the parent
 			if (options.autoResize) {
