@@ -3,11 +3,8 @@
 A JavaScript library to resize text to make it fit into a container. The font size
 gets as big as possible (or within limits that you set). Adapted from https://github.com/jquery-textfill/jquery-textfill to remove the jquery dependency.
 
-* [Homepage (for the project this was forked from)][index].
-* [Simple example (for the project this was forked from)][demo].
+* [Homepage and examples][index].
 * [Unit tests (for the project this was forked from)][tests].
-
-![logo](http://jquery-textfill.github.io/images/logo.png)
 
 ## Quick Start Guide
 
@@ -146,12 +143,11 @@ version _0.1_ and obtained the clearly stated open source licensing from Russ.
 `textfill.js` is licensed under the _MIT License_. See file
 [`LICENSE.md`](LICENSE.md) to see what you can and cannot do with the source.
 
-[index]:  http://jquery-textfill.github.io/
-[demo]:   http://jquery-textfill.github.io/example/
-[tests]:  http://jquery-textfill.github.io/unit-tests
-[issue]:  https://github.com/jquery-textfill/jquery-textfill/issues
+[index]:  https://jetholt.com/textfill.js/
+[tests]:  https://jetholt.com/textfill.js/tests
+[issue]:  https://github.com/Jetroid/textfill.js/issues
 [plugin]: https://github.com/jquery-textfill/jquery-textfill/
-[soq]:    http://stackoverflow.com/questions/687998/auto-size-dynamic-text-to-fill-fixed-size-container
+[soq]:    https://stackoverflow.com/questions/687998/auto-size-dynamic-text-to-fill-fixed-size-container
 [russ]:   https://github.com/GeekyMonkey
 [yu]:     https://github.com/livibetter
 [alex]:   https://github.com/alexdantas
