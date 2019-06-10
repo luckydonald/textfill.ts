@@ -340,7 +340,7 @@
 	};
 
 })(function() {
-	if (typeof module !== 'undefined' && module.exports) {
+	if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 		return require('jquery');
 	}
 	return window.jQuery;
