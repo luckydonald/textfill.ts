@@ -34,35 +34,6 @@ TextFill("#myelement",{
 });
 ```
 
-### Elsewhere
-
-Get the [latest release](https://github.com/Jetroid/textfill.js/releases) or [download the raw script direct from GitHub](https://raw.githubusercontent.com/Jetroid/textfill.js/master/dist/textfill.min.js):
-
-Include _textfill.min.js_:
-
-```html
-<script src="textfill.min.js"></script>
-```
-
-Create your elements. Make sure to:
-  - Put the text inside of a `<span>` child by default (see _innerTag_ in _Options_ to change this)
-
-```html
-<div id='my-element' style='width:100px;height:50px;'>
-  <span>The quick brown fox jumps over the lazy dog</span>
-</div>
-```
-
-Run the TextFill function:
-
-```html
-<script>
-  TextFill("#myelement",{
-    ...options...
-  });
-</script>
-```
-
 ## Options
 
 Remember, **container** means the _parent_ element, while **child** is the
