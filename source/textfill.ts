@@ -76,9 +76,9 @@ function _warn(...args: any[]): void {
 
 export const TextFill = function (
   selector: string | Element,
-  incomingOptions: Options
+  incomingOptions: Options | undefined | null
 ): void {
-  incomingOptions = incomingOptions || {};
+  const incomingOptionsCopy: Options | {} = incomingOptions || {};
 
     //  _____  _______ _______ _____  _____  __   _ _______
     // |     | |_____|    |      |   |     | | \  | |______
@@ -104,9 +104,9 @@ export const TextFill = function (
     // Merge provided options and default options
     let opt: keyof Options;
     for (opt in options) {
-      if (Object.hasOwn(incomingOptions, opt)) {
+      if (Object.hasOwn(incomingOptionsCopy, opt)) {
         // @ts-ignore
-        options[opt] = incomingOptions[opt];
+        options[opt] = incomingOptionsCopy[opt];
       }
     }
 
@@ -362,7 +362,7 @@ export const TextFill = function (
       if (options.autoResize) {
         parent.setAttribute(
           "data-textfill-resize-options",
-          JSON.stringify(incomingOptions || {})
+          JSON.stringify(incomingOptionsCopy)
         );
       } else {
         parent.removeAttribute("data-textfill-resize-options");
