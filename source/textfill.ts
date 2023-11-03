@@ -65,12 +65,20 @@ export type Options = {
   allowOverflow: boolean; // If true, text will stay at minFontPixels but overflow container w/out failing
   autoResize: boolean; // If true, text will resize again when the page does
 };
-(function () {
-  const TextFill = function (
-    selector: string | Element,
-    incomingOptions: Options
-  ): void {
-    incomingOptions = incomingOptions || {};
+
+// Output arguments to the Warning console
+function _warn(...args: any[]): void {
+  if (typeof console == "undefined" || typeof console.warn == "undefined") {
+    return;
+  }
+  console.warn(...args);
+}
+
+export const TextFill = function (
+  selector: string | Element,
+  incomingOptions: Options
+): void {
+  incomingOptions = incomingOptions || {};
 
     //  _____  _______ _______ _____  _____  __   _ _______
     // |     | |_____|    |      |   |     | | \  | |______
