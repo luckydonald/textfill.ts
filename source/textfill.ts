@@ -179,25 +179,19 @@ export const TextFill = function (
      * Calculates which size the font can get resized,
      * according to constrains.
      *
-     * @param {String} prefix
-     *    Gets shown on the console before all the arguments, if debug mode is on.
-     * @param {Object} ourText
-     *  The DOM element to resize that contains the text.
-     * @param {'offsetWidth' | 'offsetHeight'} measurement
-     *    Property called on `ourText` that's used to compare with `max`.
-     * @param {number} max
-     *    Maximum value, that gets compared with `measurement` called on `ourText`.
-     * @param maxHeight
-     * @param maxWidth
-     * @param {number} minFontPixels
-     *    Minimum value the font can get resized to (in pixels).
-     * @param {number} maxFontPixels
-     *    Maximum value the font can get resized to (in pixels).
-     * @param {number} oldFontSize
-     * @param {number} calculatedLineHeight
-     * @param {number} calculatedLetterSpacing
+     * @param prefix Gets shown on the console before all the arguments, if debug mode is on.
+     * @param ourText The DOM element to resize that contains the text.
+     * @param measurement Property called on `ourText` that's used to compare with `max`.
+     * @param max Maximum value, that gets compared with `measurement` called on `ourText`.
+     * @param maxHeight Maximum width, either via setting's `explicitWidth` or the container's width.
+     * @param maxWidth Maximum height, either via setting's `explicitHeight` or the container's height.
+     * @param minFontPixels Minimum value the font can get resized to (in pixels).
+     * @param maxFontPixels Maximum value the font can get resized to (in pixels).
+     * @param oldFontSize Previously set font size (best via `getComputedProperty`)
+     * @param calculatedLineHeight ratio of the line height to the font size (`lineHeight / fontSize`)
+     * @param calculatedLetterSpacing ratio of the letter spacing to the font size (`letterSpacing / fontSize`)
      *
-     * @return {number} Size (in pixels) that the font can be resized.
+     * @return {number} The size (in pixels) that the font can be resized.
      */
     function _sizing(
       prefix: string,
