@@ -528,7 +528,7 @@ export const TextFill = function (
       }
 
       if (options.changeLineHeight) {
-        parent.style.lineHeight = lineHeight * fontSizeFinal + "px";
+        parent.style.lineHeight = lineHeightRatio * fontSizeFinal + "px";
       }
 
       // Test if something wrong happened
