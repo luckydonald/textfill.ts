@@ -1,5 +1,5 @@
 /*
-Jetroid/textfill.js v1.0.3, 2019
+Adapted from Jetroid/textfill.js v1.0.3a, Jun 2019
 Adapted from jquery-textfill/jquery-textfill, v0.6.2, Feb 2018
 
 Usage:
@@ -30,11 +30,13 @@ autoResize:                 When the page resizes, re-run TextFill (with the sam
 debug:                      Output debugging messages to console.
 
 
-Original Project:
-https://github.com/jquery-textfill/jquery-textfill
+Original Projects:
+- https://github.com/jquery-textfill/jquery-textfill
+- https://github.com/Jetroid/textfill.js
 
-Jet Holt - 2019
+luckydonald - 2023
 
+Copyright (C) 2023 luckydonald
 Copyright (C) 2019 Jet Holt
 Copyright (C) 2009-2018 Russ Painter (GeekyMonkey)
 Copyright (C) 2012-2013 Yu-Jie Lin
@@ -45,15 +47,36 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
+export type ResizingCallback = (parent: Element) => void;
+export type CompleteCallback = () => void;
+export type Options = {
+  debug: boolean;
+  maxFontPixels: number;
+  minFontPixels: number;
+  innerTag: string;
+  widthOnly: boolean;
+  success: null | ResizingCallback; // callback when a resizing is done
+  fail: null | ResizingCallback; // callback when a resizing is failed
+  complete: null | CompleteCallback; // callback when all is done
+  explicitWidth: null | number;
+  explicitHeight: null | number;
+  changeLineHeight: boolean;
+  correctLineHeightOffset: boolean;
+  allowOverflow: boolean; // If true, text will stay at minFontPixels but overflow container w/out failing
+  autoResize: boolean; // If true, text will resize again when the page does
+};
 (function () {
-  const TextFill = function (selector, incomingOptions) {
+  const TextFill = function (
+    selector: string | Element,
+    incomingOptions: Options
+  ): void {
     incomingOptions = incomingOptions || {};
 
     //  _____  _______ _______ _____  _____  __   _ _______
     // |     | |_____|    |      |   |     | | \  | |______
     // |_____| |          |    __|__ |_____| |  \_| ______|
 
-    const options = {
+    const options: Options = {
       debug: false,
       maxFontPixels: 0,
       minFontPixels: 4,
@@ -71,9 +94,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     };
 
     // Merge provided options and default options
-    for (const opt in options)
-      if (incomingOptions.hasOwnProperty(opt))
+    let opt: keyof Options;
+    for (opt in options) {
+      if (Object.hasOwn(incomingOptions, opt)) {
+        // @ts-ignore
         options[opt] = incomingOptions[opt];
+      }
+    }
 
     // _______ _     _ __   _ _______ _______ _____  _____  __   _ _______
     // |______ |     | | \  | |          |      |   |     | | \  | |______
@@ -83,7 +110,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
     // Output arguments to the Debug console
     // if "Debug Mode" is enabled
-    function _debug() {
+    function _debug(...args: any[]): void {
       if (
         !options.debug ||
         typeof console == "undefined" ||
@@ -91,32 +118,32 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
       ) {
         return;
       }
-      console.debug.apply(console, arguments);
+      console.debug(...args);
     }
 
     // Output arguments to the Warning console
-    function _warn() {
+    function _warn(...args: any[]): void {
       if (typeof console == "undefined" || typeof console.warn == "undefined") {
         return;
       }
-      console.warn.apply(console, arguments);
+      console.warn(...args);
     }
 
     // Outputs all information on the current sizing
     // of the font.
     // For arguments, see _sizing(), below
     function _debug_sizing(
-      prefix,
-      ourText,
-      maxHeight,
-      maxWidth,
-      minFontPixels,
-      maxFontPixels,
-      fontSize,
-      lineHeight,
-      letterSpacing
+      prefix: string,
+      ourText: HTMLElement,
+      maxHeight: number,
+      maxWidth: number,
+      minFontPixels: number,
+      maxFontPixels: number,
+      fontSize: string | number,
+      lineHeight: number
+      // letterSpacing: number
     ) {
-      function _m(v1, v2) {
+      function _m(v1: number, v2: number): string {
         let marker = " / ";
 
         if (v1 > v2) {
@@ -128,29 +155,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
       }
       if (options.debug) {
         _debug(
-          "[TextFill] " +
-            prefix +
-            " { " +
-            "font-size: " +
-            fontSize +
-            ", " +
-            "Height: " +
-            ourText.offsetHeight +
-            "px " +
-            _m(ourText.offsetHeight, maxHeight) +
-            maxHeight +
-            "px, " +
-            "Width: " +
-            ourText.offsetWidth +
-            _m(ourText.offsetWidth, maxWidth) +
-            maxWidth +
-            ", " +
-            "minFontPixels: " +
-            minFontPixels +
-            "px, " +
-            "maxFontPixels: " +
-            maxFontPixels +
-            "px, }"
+          `[TextFill] ${prefix} { font-size: ${fontSize}, Height: ${
+            ourText.offsetHeight
+          }px ${_m(ourText.offsetHeight, maxHeight)}${maxHeight}px, Width: ${
+            ourText.offsetWidth
+          }${_m(
+            ourText.offsetWidth,
+            maxWidth
+          )}${maxWidth}, minFontPixels: ${minFontPixels}px, maxFontPixels: ${maxFontPixels}px, }`
         );
       }
     }
@@ -160,33 +172,38 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
      * according to constrains.
      *
      * @param {String} prefix
-     *		Gets shown on the console before all the arguments, if debug mode is on.
+     *    Gets shown on the console before all the arguments, if debug mode is on.
      * @param {Object} ourText
-     *	The DOM element to resize that contains the text.
-     * @param {'offsetWidth' || 'offsetHeight'} measurement
-     *		Property called on `ourText` that's used to compare with `max`.
+     *  The DOM element to resize that contains the text.
+     * @param {'offsetWidth' | 'offsetHeight'} measurement
+     *    Property called on `ourText` that's used to compare with `max`.
      * @param {number} max
-     *		Maximum value, that gets compared with `measurement` called on `ourText`.
+     *    Maximum value, that gets compared with `measurement` called on `ourText`.
+     * @param maxHeight
+     * @param maxWidth
      * @param {number} minFontPixels
-     *		Minimum value the font can get resized to (in pixels).
+     *    Minimum value the font can get resized to (in pixels).
      * @param {number} maxFontPixels
-     *		Maximum value the font can get resized to (in pixels).
+     *    Maximum value the font can get resized to (in pixels).
+     * @param {number} oldFontSize
+     * @param {number} calculatedLineHeight
+     * @param {number} calculatedLetterSpacing
      *
-     * @return Size (in pixels) that the font can be resized.
+     * @return {number} Size (in pixels) that the font can be resized.
      */
     function _sizing(
-      prefix,
-      ourText,
-      measurement,
-      max,
-      maxHeight,
-      maxWidth,
-      minFontPixels,
-      maxFontPixels,
-      oldFontSize,
-      calculatedLineHeight,
-      calculatedLetterSpacing
-    ) {
+      prefix: string,
+      ourText: HTMLElement,
+      measurement: "offsetWidth" | "offsetHeight",
+      max: number,
+      maxHeight: number,
+      maxWidth: number,
+      minFontPixels: number,
+      maxFontPixels: number,
+      oldFontSize: string,
+      calculatedLineHeight: number,
+      calculatedLetterSpacing: number
+    ): number {
       _debug_sizing(
         prefix,
         ourText,
@@ -194,7 +211,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         maxWidth,
         minFontPixels,
         maxFontPixels,
-        oldFontSize
+        oldFontSize,
+        calculatedLineHeight
       );
 
       // The kernel of the whole plugin, take most attention
@@ -217,10 +235,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
       //     http://stackoverflow.com/a/17433451/1094964
       //
 
-      ourText.style.letterSpacing = calculatedLetterSpacing;
-      ourText.style.lineHeight = calculatedLineHeight;
+      ourText.style.letterSpacing = calculatedLetterSpacing.toString();
+      ourText.style.lineHeight = calculatedLineHeight.toString();
 
-      // Need the text element to be inline or it ignores the parent width
+      // Need the text element to be inline, or it ignores the parent width
       // we reset this later.
       ourText.style.display = "inline";
 
@@ -247,7 +265,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
           maxWidth,
           minFontPixels,
           maxFontPixels,
-          fontSize
+          fontSize,
+          calculatedLineHeight
         );
       }
 
@@ -263,13 +282,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
           maxWidth,
           minFontPixels,
           maxFontPixels,
-          maxFontPixels
+          `${maxFontPixels} px`,
+          calculatedLineHeight
         );
       }
       return minFontPixels;
     }
 
-    function deleteCLHOdiv(parent) {
+    function deleteCLHOdiv(parent: HTMLElement): void {
       // If we've previously called TextFill on parent with
       // correctLineHeightOffset turned on, there will be a div between
       // the innerTag we want and the parent.
@@ -290,29 +310,44 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
     _debug("[TextFill] Start Debug");
 
-    let elements;
+    let elements: HTMLElement[];
     if (typeof selector === "string") {
       _debug(
         "[TextFill] First Parameter was a string; applying querySelectorAll."
       );
-      elements = document.querySelectorAll(selector);
-    } else if (
-      selector instanceof Element ||
-      selector instanceof HTMLDocument
-    ) {
+      const selectedNodes = document.querySelectorAll(selector);
+      elements = [];
+      for (let i = 0; i < selectedNodes.length; i++) {
+        const selectedNode = selectedNodes.item(i);
+        if (selectedNode instanceof HTMLElement) {
+          elements.push(selectedNode);
+        } else {
+          _warn(
+            "[TextFill] Selected Element is not a HTMLElement, just an Element.",
+            selectedNode
+          );
+          throw "[TextFill] Selected Element is not a HTMLElement, just an Element.";
+        }
+      }
+    } else if (selector instanceof HTMLElement) {
       _debug("[TextFill] First Parameter was a DOM element");
       // Support for DOM nodes
       elements = [selector];
-    } else if (selector.length) {
-      _debug(
-        "[TextFill] First Parameter had the length property; probably jQuery."
+      // } else if (selector.length) {
+      //   _debug(
+      //     "[TextFill] First Parameter had the length property; probably jQuery."
+      //   );
+      //   // Support for array based queries (such as jQuery)
+      //   elements = selector;
+    } else {
+      _warn(
+        "[TextFill] Selector seems invalid. Neither string nor HTMLElement.",
+        selector,
       );
-      // Support for array based queries (such as jQuery)
-      elements = selector;
+      throw "[TextFill] Selector seems invalid. Neither string nor HTMLElement.";
     }
-
     for (let i = 0; i < elements.length; i++) {
-      const parent = elements[i];
+      const parent: HTMLElement = elements[i];
       _debug("[TextFill] Parent Element: ", parent);
 
       // If autoresize, we want to store our options as a data attribute on the parent
@@ -335,7 +370,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
       // So we will temporarily set an id, making sure to backup and restore any existing ID
       const parentId = parent.id;
       parent.id = "textfill-parent-id";
-      const ourText = parent.querySelector(
+      const ourText: HTMLElement | null = parent.querySelector(
         "#textfill-parent-id > " + options.innerTag
       );
       parent.id = parentId;
@@ -354,34 +389,26 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         continue;
       }
 
-      const ourTextComputedStyle = window.getComputedStyle(ourText);
+      const ourTextComputedStyle: CSSStyleDeclaration =
+        window.getComputedStyle(ourText);
 
       _debug("[TextFill] Inner text: " + ourText.textContent);
       _debug("[TextFill] All options: ", options);
-      _debug(
-        "[TextFill] Maximum sizes: { " +
-          "Height: " +
-          maxHeight +
-          "px, " +
-          "Width: " +
-          maxWidth +
-          "px" +
-          " }"
-      );
 
       // Want to make sure our text is visible
-      if (ourTextComputedStyle === "none") {
-        if (options.fail) options.fail(parent);
-
-        _debug("[TextFill] Failure: Inner element not visible.");
-
-        continue;
-      }
+      // if (ourTextComputedStyle === "none") {
+      //   if (options.fail) options.fail(parent);
+      //
+      //   _debug("[TextFill] Failure: Inner element not visible.");
+      //
+      //   continue;
+      // }
 
       // Will resize to these dimensions.
       // Use explicit dimensions when specified
-      var maxHeight = options.explicitHeight || parent.offsetHeight;
-      var maxWidth = options.explicitWidth || parent.offsetWidth;
+      const maxHeight: number = options.explicitHeight || parent.offsetHeight;
+      const maxWidth: number = options.explicitWidth || parent.offsetWidth;
+      _debug(`[TextFill] Maximum sizes: { Height: ${maxHeight}px, Width: ${maxWidth}px }`);
 
       // This has the actual computed value - useful for calculations
       const oldFontSize = ourTextComputedStyle.getPropertyValue("font-size");
@@ -457,8 +484,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
       );
 
       // 3. Actually resize the text!
-      var fontSizeFinal;
+      let fontSizeFinal: number;
       if (options.widthOnly) {
+        fontSizeFinal = fontSizeWidth;
+      } else if (fontSizeHeight === undefined) {
         fontSizeFinal = fontSizeWidth;
       } else {
         fontSizeFinal = Math.min(fontSizeHeight, fontSizeWidth);
@@ -560,10 +589,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     );
     for (let i = 0; i < resizeElems.length; i++) {
       const parent = resizeElems[i];
-      const options = JSON.parse(
-        parent.getAttribute("data-textfill-resize-options")
-      );
-      TextFill(parent, options);
+      const resizeOptions = parent.getAttribute("data-textfill-resize-options")
+      if (resizeOptions) {
+        const options = JSON.parse(resizeOptions);
+        TextFill(parent, options);
+      } else {
+        _warn("[TextFill] Couldn't parse `data-textfill-resize-options` attribute.");
+      }
     }
   });
   if (typeof module !== "undefined" && typeof module.exports !== "undefined")
