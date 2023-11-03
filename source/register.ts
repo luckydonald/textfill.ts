@@ -1,3 +1,5 @@
+// noinspection TypeScriptUnresolvedReference
+
 import { TextFill } from "./textfill";
 
 (function () {
