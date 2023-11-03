@@ -1,27 +1,30 @@
 {
-  "name": "textfilljs",
-  "version": "1.0.3a",
-  "description": "A javascript library to resize text to make it fit into a container. The font size gets as big as possible (or within limits that you set).",
-  "main": "source/textfill.js",
+  "name": "textfillts",
+  "version": "2.0.0",
+  "description": "A typescript library to resize text to make it fit into a container. The font size gets as big as possible (or within limits that you set).",
+  "main": "source/textfill.ts",
   "scripts": {
     "test": "echo \"Open unit-tests/tests.html in your browser\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Jetroid/textfill.js.git"
+    "url": "git+https://github.com/luckydonald/textfill.ts.git"
   },
   "keywords": [
-    "text", "resize", "font-size", "jquery-textfill", "textfill", "bigtext", "big-text"
+    "text", "resize", "font-size", "jquery-textfill", "textfill", "bigtext", "big-text",
+    "auto resize", "auto-size", "auto size"
   ],
   "contributors": [
+    "luckydonald",
+    "Jet Holt",
     "Russ Painter",
     "Yu-Jie Lin",
     "Alexandre Dantas"
   ],
-  "author": "Jet Holt",
+  "author": "luckydonald",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Jetroid/textfill.js/issues"
+    "url": "https://github.com/luckydonald/textfill.ts/issues"
   },
-  "homepage": "https://github.com/Jetroid/textfill.js#readme"
+  "homepage": "https://github.com/luckydonald/textfill.ts#readme"
 }

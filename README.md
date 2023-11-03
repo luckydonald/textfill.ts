@@ -1,4 +1,4 @@
-# textfill.js
+# textfill.ts
 
 A JavaScript library to resize text to make it fit into a container. The font size
 gets as big as possible (or within limits that you set). Adapted from https://github.com/jquery-textfill/jquery-textfill to remove the jquery dependency.
